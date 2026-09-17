@@ -3,14 +3,17 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - corepack enable
+        - corepack prepare pnpm@10.12.4 --activate
+        - pnpm install --frozen-lockfile
     build:
       commands:
-        - npm run build
+        - pnpm build
   artifacts:
-    baseDirectory: dist
+    baseDirectory: build
     files:
       - '**/*'
   cache:
     paths:
       - node_modules/**/*
+      - .pnpm-store/**/*

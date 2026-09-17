@@ -1,24 +1,60 @@
 {
-  "name": "hackstart-members",
+  "name": "hackstart",
+  "version": "0.0.0",
   "private": true,
-  "version": "0.1.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 3010",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 3010",
-    "typecheck": "tsc -b --pretty false"
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start --host 127.0.0.1 --port 3010",
+    "dev": "pnpm start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "typecheck": "tsc",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.0.4",
-    "lucide-react": "^0.468.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.1.0"
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/faster": "3.10.1",
+    "@docusaurus/plugin-content-docs": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
+    "@docusaurus/theme-common": "3.10.1",
+    "@mdx-js/react": "^3.0.0",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.0.0",
+    "lucide-react": "^1.45.0",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5"
-  }
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/tsconfig": "3.10.1",
+    "@docusaurus/types": "3.10.1",
+    "@types/react": "^19.0.0",
+    "typescript": "~6.0.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0"
+  },
+  "packageManager": "pnpm@10.12.4"
 }

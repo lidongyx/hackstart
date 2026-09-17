@@ -1,0 +1,7 @@
+.state{min-height:260px;display:grid;place-items:center;color:var(--hs-muted);font-size:14px}
+.body{color:var(--hs-text);line-height:1.85}
+.body h1,.body h2,.body h3,.body h4{color:var(--hs-text);line-height:1.3}
+.body h1{font-size:42px}.body h2{margin-top:2.3em;font-size:28px}.body h3{margin-top:1.8em;font-size:21px}
+.body pre{overflow:auto;padding:16px;border:1px solid var(--hs-line);border-radius:6px;background:var(--hs-bg);font-size:13px;line-height:1.65}
+.body code{font-size:.9em}.body table{display:block;overflow:auto;border-collapse:collapse}.body th,.body td{border:1px solid var(--hs-line);padding:8px 10px;text-align:left}.body blockquote{margin-left:0;padding-left:16px;border-left:3px solid var(--hs-primary);color:var(--hs-muted)}
+@media(max-width:760px){.body h1{font-size:31px}.body h2{font-size:23px}.body h3{font-size:18px}.body pre{font-size:12px}}

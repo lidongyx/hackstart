@@ -1,0 +1,168 @@
+---
+sidebar_position: 1
+---
+
+# Cherry Studio 接入 HackStart
+
+Cherry Studio 是常见的开源桌面 AI 聊天客户端，适合日常问答、翻译、总结、写作、多模型对比和简单图片任务。它不像 Codex 那样专门围绕代码仓库工作，更像一个可配置多模型的本地 ChatGPT 客户端。
+
+Cherry Studio 通常按 OpenAI Compatible 方式接入 HackStart，因此 Base URL 使用：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+## 适合什么场景
+
+| 场景 | 是否推荐 |
+| --- | --- |
+| 日常聊天问答 | 推荐 |
+| 翻译、润色、总结 | 推荐 |
+| 多模型切换和比较 | 推荐 |
+| 图片生成或图片理解 | 取决于客户端版本和模型支持 |
+| 直接修改本机代码仓库 | 不如 Codex 或编辑器插件 |
+| 自动运行命令 | 不如 Codex CLI 或 Agent 工具 |
+
+## 下载 Cherry Studio
+
+推荐从官方入口下载：
+
+- 官方网站：[https://cherry-ai.com](https://cherry-ai.com)
+- GitHub Releases：[CherryHQ/cherry-studio Releases](https://github.com/CherryHQ/cherry-studio/releases)
+
+安装包通常按系统区分：
+
+| 系统 | 常见文件 | 注意事项 |
+| --- | --- | --- |
+| macOS Apple Silicon | arm64 / aarch64 / Apple Silicon DMG | M1、M2、M3、M4 选择这个 |
+| macOS Intel | x64 / Intel DMG | Intel Mac 选择这个 |
+| Windows | exe / msi | 下载后按安装器提示安装 |
+| Linux | AppImage / deb / rpm | 根据发行版选择 |
+
+如果下载页列出多个文件，不要只看文件大小，要看系统和芯片。Mac 选错架构时可能打不开或闪退。
+
+## macOS 安装
+
+1. 下载对应芯片的 DMG。
+2. 双击打开。
+3. 把 Cherry Studio 拖到 Applications / 应用程序。
+4. 第一次打开如被系统拦截，到 系统设置 -> 隐私与安全性 允许打开。
+5. 打开后进入设置页面。
+
+如果你不确定 Mac 芯片，点击左上角 Apple 图标 -> 关于本机。
+
+## Windows 安装
+
+1. 下载 Windows 安装包。
+2. 双击运行。
+3. 如果浏览器或 Defender 提示安全确认，确认来源是 Cherry Studio 官方网站或 GitHub Releases。
+4. 按安装器提示完成安装。
+5. 从开始菜单打开 Cherry Studio。
+
+如果你下载的是便携版 ZIP，建议解压到固定目录，例如 `C:\Tools\CherryStudio`，不要长期放在下载目录里运行。
+
+## 新增 HackStart Provider
+
+不同版本界面名称可能略有差异，但核心配置项相同。
+
+1. 打开 Cherry Studio。
+2. 进入 Settings / 设置。
+3. 找到 Model Provider / 模型服务商 / API Provider。
+4. 新增一个 OpenAI Compatible 或自定义 OpenAI 服务商。
+5. 填写名称：
+
+```text
+HackStart
+```
+
+6. 填写 API Key：
+
+```text
+sk-...
+```
+
+7. 填写 Base URL：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+8. 保存。
+
+这里要加 `/v1`。Cherry Studio 这类聊天客户端通常自己会请求 `/chat/completions` 或 OpenAI 兼容路径，所以 Base URL 应该是 OpenAI Compatible 根地址。
+
+## 添加模型
+
+在模型列表里添加 HackStart 控制台可用的模型，例如：
+
+```text
+gpt-5.5
+gpt-5.4
+gpt-5.4-mini
+gpt-5.3-codex
+gpt-image-2
+```
+
+最终以 HackStart 控制台可见模型为准。如果你不确定模型名，先去控制台或价格页查看，不要猜。
+
+## 测试聊天
+
+新建一个会话，选择 HackStart Provider 和一个模型，然后输入：
+
+```text
+请用一句话说明你已经通过 HackStart API 正常工作。
+```
+
+成功标准：
+
+1. 能返回回答。
+2. HackStart 控制台出现请求记录。
+3. 没有 401、403、model not found。
+
+## 图片模型注意事项
+
+如果客户端支持图片生成，可以尝试选择 `gpt-image-2` 或控制台可见的图片模型。
+
+建议第一次用简单提示词：
+
+```text
+生成一张白色背景的极简风格机器人图标，蓝绿色主色，适合技术文档。
+```
+
+注意：
+
+- 图片模型成本通常和文本模型不同，先看价格。
+- 有些聊天客户端只支持文本 Chat Completions，不一定支持图片接口。
+- 如果客户端不支持图片生成，不代表 HackStart API 不支持，而是客户端能力不匹配。
+
+## 常见问题
+
+### 401
+
+API Key 错误或失效。重新复制 Key，确认没有多余空格。
+
+### 403
+
+Key 没有分组、额度不足、模型无权限或触发限制。回到 HackStart 控制台检查。
+
+### model not found
+
+模型名不在当前 Key 可用范围内。换成控制台可见模型。
+
+### 连接失败
+
+检查 Base URL 是否为：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+不要写成 Codex 的根地址，也不要重复写成：
+
+```text
+https://ip2.hackstart.org/v1/v1
+```
+
+### 可以聊天但控制台没有记录
+
+确认当前会话选择的是 HackStart Provider，不是软件默认的其它服务商。

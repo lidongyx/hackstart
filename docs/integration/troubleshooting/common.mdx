@@ -1,0 +1,166 @@
+---
+sidebar_position: 1
+---
+
+# 常见排错
+
+HackStart 接入失败时，不要先怀疑模型。按下面顺序查，通常很快能定位。
+
+## 1. 先检查网络
+
+在浏览器打开：
+
+```text
+https://ip2.hackstart.org/health
+```
+
+或在终端运行：
+
+```bash
+curl -fsS https://ip2.hackstart.org/health
+```
+
+如果这里都失败，先查本机网络、代理、公司网络限制、防火墙或 DNS。
+
+## 2. 再检查 Base URL
+
+| 客户端类型 | 正确 Base URL |
+| --- | --- |
+| Codex 桌面端 | `https://ip2.hackstart.org` |
+| Codex CLI | `https://ip2.hackstart.org` |
+| CC Switch 导入 Codex | `https://ip2.hackstart.org` |
+| Cherry Studio | `https://ip2.hackstart.org/v1` |
+| 普通 OpenAI Compatible 聊天软件 | `https://ip2.hackstart.org/v1` |
+| VS Code / 编辑器插件 | 通常 `https://ip2.hackstart.org/v1` |
+| Hermes Chat Completions | 通常 `https://ip2.hackstart.org/v1` |
+
+判断规则：
+
+```text
+Codex / Responses / wire_api = "responses" -> 不加 /v1
+OpenAI Compatible / Chat Completions -> 加 /v1
+```
+
+如果错误信息里出现 `/v1/v1`，说明客户端自动加了一次 `/v1`，你配置里又加了一次。
+
+## 3. 检查 API Key
+
+常见问题：
+
+1. Key 没复制完整。
+2. Key 前后有空格。
+3. 使用了已经删除或禁用的 Key。
+4. Key 没有分配分组。
+5. Key 被设置了 IP 白名单，但当前网络不在白名单里。
+6. 把一个客户端的 Key 写到了另一个配置文件里。
+
+建议每类客户端创建单独 Key：
+
+```text
+codex-desktop-main
+codex-cli-macbook
+cherry-studio-windows
+vscode-plugin-work
+hermes-agent-lab
+```
+
+## 4. 检查额度
+
+如果返回 403、quota、balance、insufficient credits 等信息，检查：
+
+1. 账户余额是否充足。
+2. Key 是否设置了额度上限。
+3. Key 是否已经达到 5 小时、1 天或 7 天速率限制。
+4. 当前分组是否允许该模型。
+
+不要连续重试。先到控制台看是否已经产生请求记录。
+
+## 5. 检查模型名
+
+`model not found` 通常是模型名不可用或当前 Key 无权限。
+
+处理：
+
+1. 打开 HackStart 控制台或价格页。
+2. 找到当前 Key 可用的模型。
+3. 复制模型名，不要手打。
+4. 保存配置。
+5. 重启客户端。
+
+示例模型名只作参考，实际以控制台为准。
+
+## 6. 检查客户端是否读取新配置
+
+很多客户端修改配置后需要重启：
+
+- Codex 桌面端：完整退出再打开。
+- Codex CLI：退出当前会话，重新打开终端。
+- VS Code 插件：Reload Window 或重启 VS Code。
+- Cherry Studio：保存 Provider 后重新选择模型。
+- CC Switch：确认当前 Provider 已切换。
+
+只关闭窗口不一定等于退出进程。
+
+## 7. Codex 专项检查
+
+Codex 配置里应该看到：
+
+```toml
+base_url = "https://ip2.hackstart.org"
+wire_api = "responses"
+requires_openai_auth = true
+```
+
+不应该看到：
+
+```toml
+base_url = "https://ip2.hackstart.org/v1"
+wire_api = "responses"
+```
+
+macOS / Linux 常见文件：
+
+```text
+~/.codex/config.toml
+~/.codex/auth.json
+```
+
+Windows 常见文件：
+
+```text
+%userprofile%\.codex\config.toml
+%userprofile%\.codex\auth.json
+```
+
+## 8. OpenAI Compatible 专项检查
+
+聊天软件、编辑器插件、Hermes 通常应该使用：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+如果软件有测试连接按钮，先测试连接。没有测试按钮时，新建一个短会话：
+
+```text
+请回复 OK。
+```
+
+成功后再进行长任务。
+
+## 9. 仍然失败时如何描述问题
+
+向团队或管理员求助时，提供这些信息，不要提供 API Key：
+
+```text
+客户端名称和版本：
+操作系统：
+使用的 Base URL：
+模型名：
+错误码：
+错误信息：
+是否能打开 https://ip2.hackstart.org/health：
+HackStart 控制台是否出现请求记录：
+```
+
+不要截图 API Key，不要把 Key 发给别人。需要排查时，可以创建一个临时低额度 Key，用完删除。
