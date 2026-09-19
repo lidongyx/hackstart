@@ -66,8 +66,8 @@ export default function QrcodePage(): ReactNode {
           </div>
 
           <div className={styles.actions}>
-            <Link className={styles.primaryButton} to="/docs/integration/intro/">
-              查看接入教程
+            <Link className={styles.primaryButton} to="/docs/codexstart/intro/">
+              查看 CodexStart 课程
             </Link>
             <Link className={styles.secondaryButton} to="/">
               返回首页

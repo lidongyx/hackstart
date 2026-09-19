@@ -8,11 +8,13 @@ function secureMemberDocRemarkPlugin() {
   return (tree: {children: Array<Record<string, unknown>>}, file: {path?: string; data?: {frontMatter?: {hide_title?: boolean}}}) => {
     const sourcePath = file.path || '';
     if (file.data?.frontMatter?.hide_title) return;
+    if (sourcePath.endsWith(path.join('docs', 'index.mdx'))) return;
     const docsMarker = `${path.sep}docs${path.sep}`;
     const markerIndex = sourcePath.lastIndexOf(docsMarker);
     if (markerIndex < 0) return;
     const relative = path.relative(sourcePath.slice(0, markerIndex + docsMarker.length - 1), sourcePath);
     const parts = relative.split(path.sep);
+    if (parts.length < 2) return;
     const courseCode = parts[0];
     if (publicCourseCodes.has(courseCode)) return;
 

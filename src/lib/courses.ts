@@ -27,9 +27,6 @@ export const defaultCourseAccessModes: Record<string, HackstartCourse['access_mo
 };
 
 export const fallbackCourses: readonly HackstartCourse[] = [
-  {code: 'integration', title: '接入教程', docs_path: 'integration', access_mode: defaultCourseAccessModes.integration, position: 1, published: true},
-  {code: 'usecase', title: 'Codex案例', docs_path: 'usecase', access_mode: defaultCourseAccessModes.usecase, position: 2, published: true},
-  {code: 'plugin-skill-handbook', title: '插件与技能小册', docs_path: 'plugin-skill-handbook', access_mode: defaultCourseAccessModes['plugin-skill-handbook'], position: 3, published: true},
   {code: 'codexstart', title: 'CodexStart 零基础课程', docs_path: 'codexstart', access_mode: defaultCourseAccessModes.codexstart, position: 4, published: true},
 ];
 

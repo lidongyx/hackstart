@@ -133,7 +133,7 @@ export default function MembershipPage(): ReactNode {
             <aside className={styles.priceCard}>
               <div className={styles.priceCardTop}><Crown /><span>年度会员</span></div>
               <div className={styles.price}>¥{(priceCents / 100).toFixed(0)}<small> / 年</small></div>
-              <p>开通后一年内可阅读会员系列全部内容。</p>
+              <p>开通后一年内可阅读会员系列全部内容，公开课程无需开通即可阅读。</p>
               <strong>内容越丰富，价格会持续上涨</strong>
             </aside>
           </section>
@@ -141,7 +141,7 @@ export default function MembershipPage(): ReactNode {
           <section className={styles.valueSection}>
             <div className={styles.sectionHeading}>
               <Heading as="h2">会员能看到什么</Heading>
-              <p>先看公开目录，再决定是否加入。课程介绍和目录始终开放，文章详情仅对会员开放。</p>
+              <p>公开课程可以直接阅读；会员系列的课程介绍和目录始终开放，文章详情需要 HackStart 会员。</p>
             </div>
             <div className={styles.valueList}>
               <div><BookOpenText /><span><strong>CodexStart 零基础课程</strong><small>从第一次使用到完整工作流，按步骤建立实践能力。</small></span></div>
@@ -175,12 +175,12 @@ export default function MembershipPage(): ReactNode {
               </section>
 
               {pendingOrder && <section className={styles.paymentPanel}><div><p className={styles.eyebrow}>完成支付</p><Heading as="h2">扫码加入会员</Heading><p>支付完成后点击刷新状态，系统确认后会立即开通或延长会员。</p><button className={styles.secondary} onClick={refreshStatus} disabled={refreshing}>{refreshing ? <LoaderCircle className={styles.spin} /> : <RefreshCw />}{refreshing ? '刷新中' : '刷新支付状态'}</button></div>{(payment?.url_qrcode || pendingOrder.url_qrcode) ? <img className={styles.qrcode} src={payment?.url_qrcode || pendingOrder.url_qrcode} alt="支付二维码" /> : (payment?.url || pendingOrder.url) ? <a className={styles.primary} href={payment?.url || pendingOrder.url} target="_blank" rel="noreferrer">打开支付页面 <ExternalLink /></a> : <span className={styles.hint}>订单已创建，请稍候加载支付信息。</span>}</section>}
-              {data.membership.active && <section className={styles.successPanel}><Check /><div><Heading as="h2">会员已生效</Heading><p>现在可以阅读 CodexStart 和会员系列中的文章。</p></div><Link className={styles.primary} to="/docs/codexstart/intro/">查看课程目录</Link></section>}
+              {data.membership.active && <section className={styles.successPanel}><Check /><div><Heading as="h2">会员已生效</Heading><p>现在可以阅读 CodexStart 和其他会员系列中的文章。</p></div><Link className={styles.primary} to="/docs/codexstart/intro/">查看课程目录</Link></section>}
               <section className={styles.orders}><div className={styles.ordersHeading}><Heading as="h2">购买记录</Heading><button className={styles.iconButton} title="刷新购买记录" onClick={refreshStatus}><RefreshCw /></button></div>{data.orders.length ? data.orders.slice(0, 5).map((order) => <div className={styles.order} key={order.id}><span>{order.title}</span><strong>¥{(order.amount_cents / 100).toFixed(0)}</strong><em className={styles[order.status]}>{order.status === 'paid' ? '已支付' : order.status === 'pending' ? '待支付' : order.status === 'failed' ? '失败' : '已取消'}</em><small>{formatDate(order.paid_at || order.created_at)}</small></div>) : <p className={styles.hint}>还没有购买记录。</p>}</section>
             </>
           )}
           {error && <p className={styles.error}>{error}</p>}
-          <footer className={styles.footer}><Link to="/docs/integration/intro/">先浏览公开课程</Link><span>会员内容持续更新，价格会随着内容丰富逐步上涨。</span></footer>
+          <footer className={styles.footer}><Link to="/docs/codexstart/intro/">先浏览课程目录</Link><span>课程目录公开，文章正文按课程权限开放。</span></footer>
         </main>
       </div>
     </Layout>

@@ -169,9 +169,8 @@ export const modelingSubcategories = [
 ] as const;
 
 export const codexLinks = [
-  {id: 'integration', label: '接入教程', href: '/docs/integration/intro/'},
-  {id: 'usecase', label: 'Codex案例', href: '/docs/usecase/intro/'},
-  {id: 'plugin-skill-handbook', label: '插件与技能小册', href: '/docs/plugin-skill-handbook/intro/'},
+  {id: 'codexstart', label: 'CodexStart 零基础课程', href: '/docs/codexstart/intro/'},
+  {id: 'workshops', label: 'Workshop 任务目录', href: '/docs/workshops/intro/'},
 ];
 
 export const seedResources: Resource[] = [
@@ -198,8 +197,8 @@ export const seedResources: Resource[] = [
     summary: '从阅读代码到提交补丁，建立可验证的协作闭环。',
     body: '一份偏实战的仓库改造路径：明确目标、定位模块、保持变更可审查，并用测试和差异确认结果。',
     tags: ['Codex', '软件工程'],
-    href: '/docs/usecase/intro/',
-    sourceUrl: '/docs/usecase/intro/',
+    href: '/docs/codexstart/intro/',
+    sourceUrl: '/docs/codexstart/intro/',
     sourcePlatform: 'website',
     imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80',
     authorName: 'HackStart',

@@ -8,17 +8,27 @@ const adapted = new Set([
   'package.json', 'docusaurus.config.ts', 'sidebars.ts',
   'src/lib/sub2api-auth.ts', 'src/lib/courses.ts', 'src/lib/docLibrary.ts',
   'src/pages/index.tsx', 'src/pages/membership/index.tsx',
+  'src/pages/qrcode.tsx', 'src/lib/resources.ts',
+  'src/lib/courses.ts',
   'src/pages/community/index.tsx', 'src/pages/community/post/index.tsx',
   'src/components/common/MobileBottomNav.tsx', 'src/components/resources/ResourceSidebar.tsx',
+  'src/theme/Navbar/MobileSidebar/PrimaryMenu/index.tsx',
   'src/components/docs/DocLibraryIndex.tsx', 'src/theme/Root/index.tsx', 'src/theme/DocItem/Layout/index.tsx',
   'plugins/hackstart-courses-manifest/index.ts',
   'docs/codexstart/intro.md',
+  'docs/index.mdx',
 ]);
+const intentionallyRemovedPrefixes = [
+  'docs/integration/',
+  'docs/usecase/',
+  'docs/plugin-skill-handbook/',
+];
 
 test('every original document, asset, page, theme and plugin is present', async () => {
   const inventory = JSON.parse(await readFile(new URL('migration/source-inventory.json', root), 'utf8'));
   assert.ok(Object.keys(inventory.files).length > 300);
   for (const [file, hash] of Object.entries(inventory.files)) {
+    if (intentionallyRemovedPrefixes.some((prefix) => file.startsWith(prefix))) continue;
     const content = await readFile(new URL(file, root));
     if (!adapted.has(file)) assert.equal(createHash('sha256').update(content).digest('hex'), hash, file);
   }

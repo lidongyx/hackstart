@@ -15,6 +15,7 @@ import {
   Moon,
   Puzzle,
   Sun,
+  Wrench,
   Bookmark,
   FileText,
   MessageCircle,
@@ -143,8 +144,16 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           </Link>
         </nav>
 
-        <p className={styles.label}>{membershipMode ? '公开课程' : '系列课程'}</p>
-        <nav aria-label="系列课程" className={styles.nav}>
+        <p className={styles.label}>实践任务</p>
+        <nav aria-label="实践任务" className={styles.nav}>
+          <Link className={clsx(styles.item, pathname.startsWith('/workshop') && styles.active)} to="/workshop/">
+            <span className={styles.icon} aria-hidden="true"><Wrench /></span>
+            <span className={styles.copy}><strong>Workshop</strong></span>
+          </Link>
+        </nav>
+
+        <p className={styles.label}>公开课程</p>
+        <nav aria-label="公开课程" className={styles.nav}>
           {courses.filter((course) => course.access_mode === 'public').map((course) => {
             const href = courseIntroPath(course);
             return (
@@ -163,19 +172,19 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
 
         <p className={styles.label}>会员系列</p>
         <nav aria-label="会员系列" className={styles.nav}>
-          <Link className={clsx(styles.item, pathname.startsWith('/membership') && styles.active)} to="/membership/">
-            <span className={styles.icon} aria-hidden="true"><Crown /></span>
-            <span className={styles.copy}><strong>年度会员</strong></span>
-          </Link>
           {courses.filter((course) => course.access_mode === 'member').map((course) => {
             const href = courseIntroPath(course);
             return (
-              <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
-                <span className={styles.icon} aria-hidden="true"><BookOpenText /></span>
-                <span className={styles.copy}><strong>{course.title}</strong></span>
-              </Link>
+            <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
+              <span className={styles.icon} aria-hidden="true"><Crown /></span>
+              <span className={styles.copy}><strong>{course.title}</strong></span>
+            </Link>
             );
           })}
+          <Link className={clsx(styles.item, pathname.startsWith('/membership') && styles.active)} to="/membership/">
+            <span className={styles.icon} aria-hidden="true"><Crown /></span>
+            <span className={styles.copy}><strong>年度会员服务</strong></span>
+          </Link>
         </nav>
       </div>
 

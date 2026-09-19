@@ -226,8 +226,8 @@ export default function Home(): React.ReactNode {
               <h1>{current.label}</h1>
               <p>按来源、时间和关键词筛选，进入详情页查看完整内容。</p>
             </div>
-            <Link className={styles.headerAction} to="/docs/integration/intro/">
-              <span>阅读接入教程</span><ArrowUpRight aria-hidden="true" />
+            <Link className={styles.headerAction} to="/docs/codexstart/intro/">
+              <span>查看 CodexStart 课程</span><ArrowUpRight aria-hidden="true" />
             </Link>
             <Link className={styles.headerAction} to="/account/">
               <span>进入会员中心</span><Crown aria-hidden="true" />
