@@ -4,7 +4,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {LoaderCircle, LockKeyhole} from 'lucide-react';
 
 import type {HackstartCourse} from '@site/src/lib/courses';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, sub2ApiFetch} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, sub2ApiFetch} from '@site/src/lib/sub2api-auth';
 import styles from './CourseAccessGate.module.css';
 
 type AccessResponse = {
@@ -23,7 +23,6 @@ type Props = {
 export default function CourseAccessGate({course, courseStatus = 'ready', children}: Props): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const accessApiBaseURL = String(siteConfig.customFields?.courseAccessApiBaseUrl || '');
-  const membershipLoginURL = String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login');
   const [state, setState] = useState<State>(courseStatus === 'ready' && course?.access_mode === 'public' ? 'allowed' : 'loading');
 
   useEffect(() => {
@@ -65,8 +64,7 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
 
   if (state === 'allowed') return children;
 
-  const returnURL = typeof window === 'undefined' ? '/' : window.location.href;
-  const loginURL = buildSub2ApiLoginURL(membershipLoginURL, returnURL);
+  const loginURL = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search)}`;
 
   return (
     <section className={styles.gate}>
@@ -80,7 +78,7 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
         {state === 'error' && courseStatus === 'ready' && !course && '该课程已下架或尚未在课程管理中启用。'}
         {state === 'error' && !(courseStatus === 'ready' && !course) && '课程权限服务暂时不可用，请稍后刷新页面。'}
       </span>
-      {state === 'anonymous' && <Link href={loginURL}>登录后继续</Link>}
+      {state === 'anonymous' && <Link to={loginURL}>登录后继续</Link>}
       {state === 'locked' && <Link to="/membership/">了解年度会员</Link>}
       {state === 'error' && !(courseStatus === 'ready' && !course) && <button type="button" onClick={() => globalThis.location?.reload()}>重新加载</button>}
     </section>

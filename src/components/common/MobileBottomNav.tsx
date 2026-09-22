@@ -23,7 +23,7 @@ import {
 import clsx from 'clsx';
 
 import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 
 type MenuKey = 'home' | 'workshop' | 'docs' | 'community' | 'account';
@@ -137,15 +137,7 @@ function MobileBottomNavContent(): ReactNode {
           ? communityItems
           : [];
 
-  const consolePath = authReady && currentUser
-    ? currentUser.role === 'admin' ? '/admin/dashboard' : '/dashboard'
-    : '/login';
-  const consoleHref = authReady && currentUser
-    ? `https://hackstart.org${consolePath}`
-    : buildSub2ApiLoginURL(
-      'https://hackstart.org/login',
-      typeof window === 'undefined' ? 'https://i.hackstart.org/' : window.location.href,
-    );
+  const consoleHref = authReady && currentUser ? '/account/' : `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search)}`;
 
   const closeMenu = () => setOpenMenu(null);
   const toggleMenu = (menu: MenuKey) => setOpenMenu((value) => value === menu ? null : menu);
@@ -195,7 +187,7 @@ function MobileBottomNavContent(): ReactNode {
                 <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true">{colorMode === 'dark' ? <Sun /> : <Moon />}</span>
                 <span>切换{colorMode === 'dark' ? '亮色' : '暗色'}主题</span>
               </button>
-              <Link className="hs-mobile-bottom-nav__menu-item" href={consoleHref} onClick={closeMenu}>
+              <Link className="hs-mobile-bottom-nav__menu-item" to={consoleHref} onClick={closeMenu}>
                 <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true"><UserRound /></span>
                 <span>{currentUser ? '打开账号控制台' : '登录 / 注册'}</span>
                 <span className="hs-mobile-bottom-nav__external" aria-hidden="true">↗</span>

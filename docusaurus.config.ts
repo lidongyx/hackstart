@@ -43,7 +43,7 @@ const config: Config = {
       'https://hackadmin.hackweek.org/api/hackstart/content',
     membershipLoginUrl:
       process.env.HACKSTART_MEMBERSHIP_LOGIN_URL ||
-      'https://hackstart.org/login',
+      '/login/',
     authApiUrl:
       process.env.HACKSTART_AUTH_API_URL ||
       'https://hackstart.org/api/v1/auth/me',
@@ -52,7 +52,7 @@ const config: Config = {
       'https://hackadmin.hackweek.org/api/hackstart/membership',
     communityApiBaseUrl:
       process.env.HACKSTART_COMMUNITY_API_BASE_URL ||
-      'https://hackadmin.hackweek.org/api/community',
+      'https://hackadmin.hackweek.org/api/hackstart/community',
     hackstartWorkshopApiBaseUrl:
       process.env.HACKSTART_WORKSHOP_API_BASE_URL ||
       'https://hackadmin.hackweek.org/api/hackstart',

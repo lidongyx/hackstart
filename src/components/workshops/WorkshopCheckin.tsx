@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import Link from '@docusaurus/Link';
 import {CheckCircle2, ImagePlus, LockKeyhole, LogIn, LoaderCircle, RefreshCw, Save, Trash2, Upload, Wrench} from 'lucide-react';
 
-import {buildSub2ApiLoginURL, getSub2ApiToken} from '@site/src/lib/sub2api-auth';
+import {getSub2ApiToken} from '@site/src/lib/sub2api-auth';
 import {deleteHackstartWorkshopScreenshot, fetchHackstartWorkshops, saveHackstartWorkshopSubmission, uploadHackstartWorkshopScreenshot, useWorkshopApi, useWorkshopSelection, type Workshop, type WorkshopTask} from '@site/src/lib/workshops';
 import PrivateWorkshopImage from './PrivateWorkshopImage';
 import WorkshopTabs from './WorkshopTabs';
@@ -46,7 +46,7 @@ export default function WorkshopCheckin(): React.ReactNode {
   const workshop = items.find((item) => item.code === selectedCode) || items[0];
   const task: WorkshopTask | undefined = workshop?.tasks?.[0];
   const submission = task?.submission;
-  const loginHref = buildSub2ApiLoginURL('https://hackstart.org/login', typeof window === 'undefined' ? '/workshop/tasks/' : window.location.href);
+  const loginHref = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/workshop/tasks/' : window.location.pathname + window.location.search)}`;
 
   async function save() {
     if (!task) return;

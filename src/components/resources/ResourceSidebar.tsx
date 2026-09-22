@@ -24,7 +24,7 @@ import {
 
 import {categories, codexLinks, type ResourceCategory} from '@site/src/lib/resources';
 import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 import styles from './ResourceSidebar.module.css';
 
@@ -50,6 +50,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
   const [authReady, setAuthReady] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -76,6 +77,10 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
   }, []);
 
   useEffect(() => {
+    scrollRef.current?.scrollTo({top: 0});
+  }, [pathname, authReady, Boolean(currentUser)]);
+
+  useEffect(() => {
     if (!accountOpen) return undefined;
     const closeOnOutsideClick = (event: MouseEvent) => {
       if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false);
@@ -91,15 +96,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
     };
   }, [accountOpen]);
 
-  const consolePath = authReady && currentUser
-    ? currentUser.role === 'admin' ? '/admin/dashboard' : '/dashboard'
-    : '/login';
-  const consoleHref = authReady && currentUser
-    ? `https://hackstart.org${consolePath}`
-    : buildSub2ApiLoginURL(
-      'https://hackstart.org/login',
-      typeof window === 'undefined' ? 'https://i.hackstart.org/' : window.location.href,
-    );
+  const consoleHref = authReady && currentUser ? '/account/' : `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search)}`;
 
   return (
     <aside className={clsx(styles.sidebar, embedded && styles.embedded)}>
@@ -111,7 +108,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         </span>
       </Link>
 
-      <div className={styles.scroll}>
+      <div ref={scrollRef} className={styles.scroll}>
         <p className={styles.label}>{membershipMode ? '浏览内容' : '资源导航'}</p>
         <nav aria-label="资源导航" className={styles.nav}>
           {membershipMode && <Link className={clsx(styles.item, pathname === '/' && styles.active)} to="/">
@@ -202,15 +199,15 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           {accountOpen && <div className={styles.accountMenu} role="menu">
             <div className={styles.accountMenuIdentity}><strong>{communityDisplayName(currentUser)}</strong><span>{currentUser.email || '—'}</span></div>
             <button type="button" role="menuitem" onClick={() => {setColorMode(nextColorMode); setAccountOpen(false);}}><span><span aria-hidden="true">{colorMode === 'dark' ? <Sun /> : <Moon />}</span>切换{colorMode === 'dark' ? '亮色' : '暗色'}主题</span></button>
-            <Link role="menuitem" href={consoleHref} onClick={() => setAccountOpen(false)}><span><UserRound />{membershipMode ? '账户中心' : '登录 API 控制台'}</span><span>↗</span></Link>
+            <Link role="menuitem" to={consoleHref} onClick={() => setAccountOpen(false)}><span><UserRound />账户中心</span></Link>
             <Link role="menuitem" to="/account/" onClick={() => setAccountOpen(false)}><span><Crown />会员中心</span></Link>
             <Link role="menuitem" to="/profile/" onClick={() => setAccountOpen(false)}><span><UserRound />个人资料</span></Link>
             <Link role="menuitem" to="/community/mine/?tab=favorites" onClick={() => setAccountOpen(false)}><span><Bookmark />我的收藏</span></Link>
             <Link role="menuitem" to="/community/mine/?tab=posts" onClick={() => setAccountOpen(false)}><span><FileText />我的帖子</span></Link>
             <Link role="menuitem" to="/community/mine/?tab=comments" onClick={() => setAccountOpen(false)}><span><MessageCircle />我的评论</span></Link>
           </div>}
-        </div> : <Link className={styles.console} href={consoleHref}>
-          <span>{membershipMode ? '登录账户' : '登录 / 控制台'}</span><span aria-hidden="true">↗</span>
+        </div> : <Link className={styles.console} to={consoleHref}>
+          <span>登录 / 注册</span><span aria-hidden="true">↗</span>
         </Link>}
       </div>
     </aside>

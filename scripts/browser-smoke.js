@@ -50,15 +50,15 @@ async (page) => {
     else if (path === '/api/resources/7') body = resource;
     else if (path === '/api/hackstart/skills') body = {items: [skill], categories: [{category_key: 'coding', category_name: '编程', count: 1}], total: 1, page: 1, pages: 1};
     else if (path === '/api/hackstart/skills/8') body = skill;
-    else if (path === '/api/community/topics') body = {items: [topic]};
-    else if (path === '/api/community/posts' && method === 'GET') body = {items: [post], pagination: {page: 1, pages: 1, total: 1}};
-    else if (path === '/api/community/posts' && method === 'POST') {post = {...post, ...payload()}; body = post;}
-    else if (path === '/api/community/posts/1/comments') {post.comments.push({id: 1, ...payload(), created_at: post.created_at, author: profile}); post.comment_count++; body = post.comments[0];}
-    else if (path === '/api/community/posts/1' && method === 'PATCH') {post = {...post, ...payload()}; body = post;}
-    else if (path === '/api/community/posts/1') body = post;
-    else if (path === '/api/community/mine/posts') body = {items: [post], pagination: {page: 1, pages: 1, total: 1}};
-    else if (path === '/api/community/mine/comments') body = {items: post.comments.map(comment => ({...comment, post: {id: 1, title: post.title}})), pagination: {page: 1, pages: 1, total: 1}};
-    else if (path === '/api/community/media') {uploads++; body = {url: `${base}/img/hackstart.jpeg`};}
+    else if (path === '/api/hackstart/community/topics') body = {items: [topic]};
+    else if (path === '/api/hackstart/community/posts' && method === 'GET') body = {items: [post], pagination: {page: 1, pages: 1, total: 1}};
+    else if (path === '/api/hackstart/community/posts' && method === 'POST') {post = {...post, ...payload()}; body = post;}
+    else if (path === '/api/hackstart/community/posts/1/comments') {post.comments.push({id: 1, ...payload(), created_at: post.created_at, author: profile}); post.comment_count++; body = post.comments[0];}
+    else if (path === '/api/hackstart/community/posts/1' && method === 'PATCH') {post = {...post, ...payload()}; body = post;}
+    else if (path === '/api/hackstart/community/posts/1') body = post;
+    else if (path === '/api/hackstart/community/mine/posts') body = {items: [post], pagination: {page: 1, pages: 1, total: 1}};
+    else if (path === '/api/hackstart/community/mine/comments') body = {items: post.comments.map(comment => ({...comment, post: {id: 1, title: post.title}})), pagination: {page: 1, pages: 1, total: 1}};
+    else if (path === '/api/hackstart/community/media') {uploads++; body = {url: `${base}/img/hackstart.jpeg`};}
     else {unexpected.push(`${method} ${path}`); body = {message: 'Unmocked API'}; status = 501;}
     await route.fulfill({status, contentType: 'application/json', body: JSON.stringify(body), headers: {'access-control-allow-origin': '*'}});
   };
@@ -79,8 +79,8 @@ async (page) => {
   assert(chapter, 'Course chapter missing');
   await visit(chapter); await visible('本课程仅限会员阅读');
   const login = await page.getByRole('link', {name: '登录后继续'}).getAttribute('href');
-  const redirect = await page.evaluate(raw => new URL(raw).searchParams.get('redirect'), login);
-  assert(redirect.startsWith(base), 'Login return points at old site'); checks.push('匿名会员门禁/深链接回跳');
+  const redirect = await page.evaluate(raw => new URL(raw, location.origin).searchParams.get('redirect'), login);
+  assert(redirect === '/docs/codexstart/intro/', 'Login return points at the current site'); checks.push('匿名会员门禁/深链接回跳');
   await visit('/account/#auth_token=mock-token&refresh_token=mock-refresh&expires_in=3600'); await visible('尚未开通会员');
   assert(!page.url().includes('auth_token'), 'Fragment token remains');
   await visit(chapter); await visible('加入 HackStart 年度会员后'); checks.push('非会员门禁');
@@ -115,7 +115,7 @@ async (page) => {
     assert(dimensions.scroll <= dimensions.width + 1, `Horizontal overflow: ${path}`);
   }
   await page.getByRole('button', {name: '我的', exact: true}).click(); await page.getByRole('link', {name: '个人资料', exact: true}).click(); await visible('迁移测试会员'); checks.push('手机导航/五类页面无横向溢出');
-  await page.getByRole('button', {name: '退出登录', exact: true}).click(); await visible('前往统一登录'); checks.push('退出登录');
+  await page.getByRole('button', {name: '退出登录', exact: true}).click(); await visible('登录 / 注册'); checks.push('退出登录');
   assert(uploads === 2, 'Avatar and community image uploads must both be mocked');
   assert(errors.length === 0, `Browser errors: ${errors.join('; ')}`);
   assert(unexpected.length === 0, `Unexpected mock routes: ${unexpected.join('; ')}`);

@@ -9,7 +9,7 @@ import {ArrowLeft, Bookmark, Check, ChevronRight, Eye, LoaderCircle, MessageCirc
 
 import CommunityAvatar, {communityDisplayName, type CommunityUser} from '@site/src/components/community/CommunityAvatar';
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, sub2ApiFetch, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, sub2ApiFetch, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import styles from '../styles.module.css';
 
 type User = CommunityUser & {id: number};
@@ -40,7 +40,6 @@ export default function CommunityPostPage(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const {search} = useLocation();
   const apiBase = String(siteConfig.customFields?.communityApiBaseUrl || '');
-  const loginURL = String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login');
   const postId = useMemo(() => Number(new URLSearchParams(search).get('id')), [search]);
   const [post, setPost] = useState<Post | null>(null);
   const [currentUser, setCurrentUser] = useState<Sub2ApiUser | null>(null);
@@ -113,10 +112,7 @@ export default function CommunityPostPage(): ReactNode {
     }
   }
 
-  const loginHref = buildSub2ApiLoginURL(
-    loginURL,
-    typeof window === 'undefined' ? 'https://i.hackstart.org/community/' : window.location.href,
-  );
+  const loginHref = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/community/' : window.location.pathname + window.location.search)}`;
 
   return <Layout title={post ? `${post.title} · HackStart 社区` : '社区帖子 · HackStart'} description="HackStart 社区帖子详情">
     <main className={styles.postPage}>

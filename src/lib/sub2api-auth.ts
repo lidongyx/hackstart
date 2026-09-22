@@ -17,17 +17,46 @@ const AUTH_TOKEN_KEY = 'auth_token';
 const AUTH_USER_KEY = 'auth_user';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const TOKEN_EXPIRES_AT_KEY = 'token_expires_at';
+const RETURN_HASH_KEY = 'return_hash';
 const DEFAULT_AUTH_API_URL = 'https://hackstart.org/api/v1/auth/me';
 
 let authApiURL = DEFAULT_AUTH_API_URL;
 let refreshApiURL = 'https://hackstart.org/api/v1/auth/refresh';
+let sub2ApiBaseURL = 'https://hackstart.org/api/v1';
 let refreshPromise: Promise<boolean> | null = null;
 const AUTH_CHANGED_EVENT = 'hackstart:auth-changed';
 
 export function configureSub2ApiAuth(url?: string, baseURL?: string): void {
   const normalized = url?.trim();
   if (normalized) authApiURL = normalized;
-  if (baseURL) refreshApiURL = `${baseURL.replace(/\/$/, '')}/auth/refresh`;
+  if (baseURL) {
+    sub2ApiBaseURL = baseURL.replace(/\/$/, '');
+    refreshApiURL = `${sub2ApiBaseURL}/auth/refresh`;
+  }
+}
+
+type LoginResponse = {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  user?: Sub2ApiUser;
+};
+
+export async function loginWithSub2Api(email: string, password: string): Promise<LoginResponse> {
+  const response = await fetch(`${sub2ApiBaseURL}/auth/login`, {
+    method: 'POST',
+    credentials: 'omit',
+    headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+    body: JSON.stringify({email, password}),
+  });
+  const body = await response.json().catch(() => ({})) as LoginResponse & {message?: string; error?: string};
+  if (!response.ok || !body.access_token) throw new Error(body.message || body.error || '登录失败，请检查邮箱和密码');
+  window.localStorage.setItem(AUTH_TOKEN_KEY, body.access_token);
+  if (body.refresh_token) window.localStorage.setItem(REFRESH_TOKEN_KEY, body.refresh_token);
+  if (body.expires_in) window.localStorage.setItem(TOKEN_EXPIRES_AT_KEY, String(Date.now() + body.expires_in * 1000));
+  if (body.user) window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(body.user));
+  notifySub2ApiAuthChanged();
+  return body;
 }
 
 export function consumeAuthTokenFromFragment(): void {
@@ -47,7 +76,13 @@ export function consumeAuthTokenFromFragment(): void {
   if (Number.isFinite(expiresIn) && expiresIn > 0) {
     window.localStorage.setItem(TOKEN_EXPIRES_AT_KEY, String(Date.now() + expiresIn * 1000));
   }
-  window.history.replaceState(window.history.state, document.title, `${window.location.pathname}${window.location.search}`);
+  const returnHash = params.get(RETURN_HASH_KEY)?.trim() || '';
+  const restoredHash = returnHash.startsWith('#') ? returnHash : '';
+  window.history.replaceState(
+    window.history.state,
+    document.title,
+    `${window.location.pathname}${window.location.search}${restoredHash}`,
+  );
 }
 
 export function notifySub2ApiAuthChanged(): void {

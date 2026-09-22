@@ -29,6 +29,12 @@ test('login fragment stores access/refresh/expiry and removes tokens from URL', 
   assert.equal(replaced, '/account/?from=test');
 });
 
+test('login fragment restores the original document anchor after consuming tokens', () => {
+  window.location.hash = '#auth_token=mock-access&return_hash=%23intro';
+  auth.consumeAuthTokenFromFragment();
+  assert.equal(replaced, '/account/?from=test#intro');
+});
+
 test('a new legacy login cannot inherit another account refresh token', () => {
   window.location.hash = '#auth_token=legacy-token'; auth.consumeAuthTokenFromFragment();
   assert.equal(storage.get('auth_token'), 'legacy-token');

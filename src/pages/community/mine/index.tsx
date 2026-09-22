@@ -7,7 +7,7 @@ import {Bookmark, Eye, FileText, LoaderCircle, MessageCircle} from 'lucide-react
 
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
 import type {CommunityUser} from '@site/src/components/community/CommunityAvatar';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, sub2ApiFetch, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, sub2ApiFetch, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import styles from '../styles.module.css';
 
 type User = CommunityUser & {id: number};
@@ -34,7 +34,6 @@ export default function CommunityMinePage(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const {search} = useLocation();
   const apiBase = String(siteConfig.customFields?.communityApiBaseUrl || '');
-  const loginURL = String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login');
   const tab = useMemo(() => tabFromSearch(search), [search]);
   const [currentUser, setCurrentUser] = useState<Sub2ApiUser | null | undefined>(undefined);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -86,10 +85,7 @@ export default function CommunityMinePage(): ReactNode {
     return () => { mounted = false; };
   }, [apiBase, currentUser, tab]);
 
-  const loginHref = buildSub2ApiLoginURL(
-    loginURL,
-    typeof window === 'undefined' ? `/community/mine/?tab=${tab}` : window.location.href,
-  );
+  const loginHref = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? `/community/mine/?tab=${tab}` : window.location.pathname + window.location.search)}`;
   const title = tab === 'posts' ? '我的帖子' : tab === 'comments' ? '我的评论' : '我的收藏';
   const emptyCopy = tab === 'posts' ? '你还没有发布过帖子。' : tab === 'comments' ? '你还没有发表过评论。' : '在帖子详情页收藏的内容会显示在这里。';
 
@@ -99,7 +95,7 @@ export default function CommunityMinePage(): ReactNode {
       <section className={styles.mineContent}><div className={styles.mineInner}>
         <header className={styles.mineHeader}><div><p>COMMUNITY ACCOUNT</p><h1>{title}</h1></div><Link to="/community/">返回社区</Link></header>
         <nav className={styles.mineTabs} aria-label="社区个人中心"><Link to="/community/mine/?tab=favorites" data-active={tab === 'favorites'}><Bookmark />我的收藏</Link><Link to="/community/mine/?tab=posts" data-active={tab === 'posts'}><FileText />我的帖子</Link><Link to="/community/mine/?tab=comments" data-active={tab === 'comments'}><MessageCircle />我的评论</Link></nav>
-        {currentUser === undefined || loading ? <div className={styles.postState}><LoaderCircle className={styles.spin} /><span>正在读取</span></div> : !currentUser ? <div className={styles.mineEmpty}><strong>登录后查看个人内容</strong><a href={loginHref}>登录 HackStart</a></div> : error ? <div className={styles.mineEmpty}><strong>{error}</strong></div> : tab === 'comments' ? <div className={styles.mineList}>{comments.length === 0 ? <div className={styles.mineEmpty}><MessageCircle /><strong>{emptyCopy}</strong></div> : comments.map((item) => <article className={styles.mineComment} key={item.id}><Link to={`/community/post/?id=${item.post?.id || ''}`}>{item.post?.title || '社区帖子'}</Link><p>{item.content}</p><span>{formatDate(item.created_at)}</span></article>)}</div> : <div className={styles.mineList}>{(tab === 'posts' ? posts : favorites).length === 0 ? <div className={styles.mineEmpty}><Bookmark /><strong>{emptyCopy}</strong></div> : (tab === 'posts' ? posts : favorites).map((item) => <Link className={styles.mineItem} key={item.id} to={`/community/post/?id=${item.id}`}><div className={styles.mineItemTitle}><strong>{item.title}</strong><span>{formatDate(item.updated_at || item.created_at)}</span></div><div className={styles.mineItemMeta}><span>{item.topic?.name || '社区'}</span><span><MessageCircle />{item.comment_count}</span><span><Eye />{item.view_count}</span></div></Link>)}</div>}
+        {currentUser === undefined || loading ? <div className={styles.postState}><LoaderCircle className={styles.spin} /><span>正在读取</span></div> : !currentUser ? <div className={styles.mineEmpty}><strong>登录后查看个人内容</strong><Link to={loginHref}>登录 HackStart</Link></div> : error ? <div className={styles.mineEmpty}><strong>{error}</strong></div> : tab === 'comments' ? <div className={styles.mineList}>{comments.length === 0 ? <div className={styles.mineEmpty}><MessageCircle /><strong>{emptyCopy}</strong></div> : comments.map((item) => <article className={styles.mineComment} key={item.id}><Link to={`/community/post/?id=${item.post?.id || ''}`}>{item.post?.title || '社区帖子'}</Link><p>{item.content}</p><span>{formatDate(item.created_at)}</span></article>)}</div> : <div className={styles.mineList}>{(tab === 'posts' ? posts : favorites).length === 0 ? <div className={styles.mineEmpty}><Bookmark /><strong>{emptyCopy}</strong></div> : (tab === 'posts' ? posts : favorites).map((item) => <Link className={styles.mineItem} key={item.id} to={`/community/post/?id=${item.id}`}><div className={styles.mineItemTitle}><strong>{item.title}</strong><span>{formatDate(item.updated_at || item.created_at)}</span></div><div className={styles.mineItemMeta}><span>{item.topic?.name || '社区'}</span><span><MessageCircle />{item.comment_count}</span><span><Eye />{item.view_count}</span></div></Link>)}</div>}
       </div></section>
     </main>
   </Layout>;

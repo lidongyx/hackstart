@@ -9,7 +9,7 @@ import {ArrowRight, Bold, Code2, Eye, Heading2, Image, Italic, Link2, List, Load
 
 import CommunityAvatar, {communityDisplayName, type CommunityUser} from '@site/src/components/community/CommunityAvatar';
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, sub2ApiFetch, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, sub2ApiFetch, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import styles from './styles.module.css';
 
 type User = CommunityUser & {id: number};
@@ -121,11 +121,7 @@ export default function CommunityPage(): React.ReactNode {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageUploadError, setImageUploadError] = useState('');
   const imageInputRef = useRef<HTMLInputElement | null>(null);
-  const loginURL = String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login');
-  const loginHref = buildSub2ApiLoginURL(
-    loginURL,
-    typeof window === 'undefined' ? 'https://i.hackstart.org/community/' : window.location.href,
-  );
+  const loginHref = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/community/' : window.location.pathname + window.location.search)}`;
 
   const loadTopics = () => fetch(`${apiBase}/topics`, {headers: {Accept: 'application/json'}})
     .then((response) => response.ok ? response.json() as Promise<{items: Topic[]}> : Promise.reject(new Error('无法读取主题')))

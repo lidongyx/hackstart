@@ -35,7 +35,7 @@ export default function DocSidebarDesktop({path, sidebar, onCollapse, isHidden}:
           <span aria-hidden="true">{colorMode === 'dark' ? '☼' : '◐'}</span>
           {colorMode === 'dark' ? '切换亮色主题' : '切换暗色主题'}
         </button>
-        <Link href="https://hackstart.org/login">登录 / 控制台 <span aria-hidden="true">↗</span></Link>
+        <Link to="/login/">登录 / 注册 <span aria-hidden="true">↗</span></Link>
       </div>
       {hideable && <CollapseButton onClick={onCollapse} />}
     </div>

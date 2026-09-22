@@ -5,7 +5,7 @@ import Heading from '@theme/Heading';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {BookOpenText, Check, Clock3, Crown, ExternalLink, LoaderCircle, RefreshCw, Sparkles} from 'lucide-react';
 
-import {buildSub2ApiLoginURL, fetchCurrentSub2ApiUser, sub2ApiFetch, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, sub2ApiFetch, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
 import styles from './styles.module.css';
 
@@ -46,7 +46,6 @@ function formatDate(value: string | null | undefined) {
 export default function MembershipPage(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const apiURL = String(siteConfig.customFields?.membershipApiUrl || '');
-  const loginURL = String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login');
   const [session, setSession] = useState<Sub2ApiUser | null | undefined>(undefined);
   const [data, setData] = useState<MembershipResponse | null>(null);
   const [payment, setPayment] = useState<PaymentResponse | null>(null);
@@ -82,7 +81,7 @@ export default function MembershipPage(): ReactNode {
   }, [load]);
 
   const returnURL = typeof window === 'undefined' ? `${siteConfig.url}/membership/` : window.location.href;
-  const loginHref = useMemo(() => buildSub2ApiLoginURL(loginURL, returnURL), [loginURL, returnURL]);
+  const loginHref = useMemo(() => `/login/?redirect=${encodeURIComponent(returnURL.startsWith('/') ? returnURL : '/membership/')}`, [returnURL]);
   const pendingOrder = data?.orders.find((order) => order.status === 'pending');
   const canBuy = Boolean(data?.provider_enabled && !pendingOrder);
   const priceCents = data?.product.amount_cents || 6800;
@@ -151,7 +150,7 @@ export default function MembershipPage(): ReactNode {
           </section>
 
           {loading && <section className={styles.state}><LoaderCircle className={styles.spin} /><span>正在读取会员状态</span></section>}
-          {!loading && !session && <section className={styles.actionPanel}><div><Heading as="h2">登录后即可加入</Heading><p>使用 HackStart 账号登录，支付完成后会自动回到这里。</p></div><Link className={styles.primary} href={loginHref}>登录并继续 <ExternalLink /></Link></section>}
+          {!loading && !session && <section className={styles.actionPanel}><div><Heading as="h2">登录后即可加入</Heading><p>使用 HackStart 账号登录，支付完成后会自动回到这里。</p></div><Link className={styles.primary} to={loginHref}>登录并继续 <ExternalLink /></Link></section>}
           {!loading && session && data && (
             <>
               <section className={styles.grid}>

@@ -1,18 +1,16 @@
 import React, {useEffect, useState, type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import {LoaderCircle, LogOut} from 'lucide-react';
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
 import {getMe, logoutRemote} from '@site/src/lib/api';
-import {buildSub2ApiLoginURL, getSub2ApiToken, subscribeToSub2ApiAuth} from '@site/src/lib/sub2api-auth';
+import {getSub2ApiToken, subscribeToSub2ApiAuth} from '@site/src/lib/sub2api-auth';
 import type {User} from '@site/src/lib/types';
 import styles from './styles.module.css';
 
 type Props = {title: string; children: (user: User, updateUser: (user: User) => void) => ReactNode};
 
 export default function AccountShell({title, children}: Props): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -30,8 +28,7 @@ export default function AccountShell({title, children}: Props): ReactNode {
     const unsubscribe = subscribeToSub2ApiAuth(() => void load(false));
     return () => { active = false; unsubscribe(); };
   }, [revision]);
-  const loginURL = buildSub2ApiLoginURL(String(siteConfig.customFields?.membershipLoginUrl || 'https://hackstart.org/login'),
-    typeof window === 'undefined' ? `${siteConfig.url}/account/` : window.location.href);
+  const loginURL = `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/account/' : window.location.pathname + window.location.search)}`;
   return <Layout title={title}><div className={styles.shell}>
     <ResourceSidebar membershipMode />
     <main className={styles.page}>
@@ -40,8 +37,8 @@ export default function AccountShell({title, children}: Props): ReactNode {
       }}><LogOut size={16} />退出登录</button>}</header>
       <nav className={styles.tabs} aria-label="账户导航"><Link to="/account/">会员中心</Link><Link to="/profile/">个人资料</Link><Link to="/membership/">年度会员</Link></nav>
       {loading ? <div className={styles.state}><LoaderCircle className={styles.spin} />正在读取账户</div>
-        : error ? <div className={styles.state} role="alert"><p>{error}</p><button className={styles.secondary} onClick={() => setRevision(value => value + 1)}>重试</button><a href={loginURL}>重新登录</a></div>
-        : user ? children(user, setUser) : <div className={styles.state}><h2>登录 HackStart</h2><a className={styles.primary} href={loginURL}>前往统一登录</a></div>}
+        : error ? <div className={styles.state} role="alert"><p>{error}</p><button className={styles.secondary} onClick={() => setRevision(value => value + 1)}>重试</button><Link to={loginURL}>重新登录</Link></div>
+        : user ? children(user, setUser) : <div className={styles.state}><h2>登录 HackStart</h2><Link className={styles.primary} to={loginURL}>登录并继续</Link></div>}
     </main>
   </div></Layout>;
 }

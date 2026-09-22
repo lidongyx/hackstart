@@ -68,8 +68,8 @@ export default function NavbarMobilePrimaryMenu(): ReactNode {
           <span aria-hidden="true">{colorMode === 'dark' ? '☼' : '◐'}</span>
           {colorMode === 'dark' ? '切换亮色主题' : '切换暗色主题'}
         </button>
-        <Link className="hs-mobile-docs-console" href="https://hackstart.org/login" onClick={() => mobileSidebar.toggle()}>
-          进入控制台 <span aria-hidden="true">↗</span>
+        <Link className="hs-mobile-docs-console" to="/login/" onClick={() => mobileSidebar.toggle()}>
+          登录 / 注册 <span aria-hidden="true">↗</span>
         </Link>
       </div>
     </nav>
