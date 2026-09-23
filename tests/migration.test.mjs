@@ -13,6 +13,7 @@ const adapted = new Set([
   'src/pages/community/index.tsx', 'src/pages/community/post/index.tsx', 'src/pages/community/mine/index.tsx',
   'src/pages/workshop/index.tsx', 'src/pages/workshop/tasks.tsx', 'src/pages/workshop/results.tsx',
   'src/css/custom.css',
+  'src/components/resources/ResourceSidebar.module.css',
   'src/theme/Navbar/index.tsx',
   'src/components/common/MobileBottomNav.tsx', 'src/components/resources/ResourceSidebar.tsx',
   'src/theme/Navbar/MobileSidebar/PrimaryMenu/index.tsx',

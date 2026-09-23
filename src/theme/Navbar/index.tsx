@@ -6,7 +6,7 @@ import {BookOpen, Boxes, Crown, MessagesSquare, Wrench} from 'lucide-react';
 const items = [
   {label: '系列课程', href: '/docs/codexstart/intro/', icon: BookOpen, match: (path: string) => path.startsWith('/docs/')},
   {label: 'Workshop', href: '/workshop/', icon: Wrench, match: (path: string) => path.startsWith('/workshop')},
-  {label: '资源导航', href: '/?category=modeling', icon: Boxes, match: (path: string) => path === '/'},
+  {label: '资源导航', href: '/?category=modeling', icon: Boxes, match: (path: string) => path === '/' || path.startsWith('/resources')},
   {label: '社区', href: '/community/', icon: MessagesSquare, match: (path: string) => path.startsWith('/community')},
   {label: '永久会员', href: '/membership/', icon: Crown, match: (path: string) => path.startsWith('/membership') || path.startsWith('/account') || path.startsWith('/profile')},
 ];
@@ -24,7 +24,6 @@ export default function Navbar(): React.ReactNode {
           <Icon aria-hidden="true" /><span>{label}</span>
         </Link>)}
       </nav>
-      <Link className="hs-top-navbar__member" to="/membership/"><Crown aria-hidden="true" />永久会员</Link>
     </div>
   </header>;
 }
