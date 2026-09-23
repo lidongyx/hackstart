@@ -16,7 +16,9 @@ function secureMemberDocRemarkPlugin() {
     const parts = relative.split(path.sep);
     if (parts.length < 2) return;
     const courseCode = parts[0];
-    if (publicCourseCodes.has(courseCode)) return;
+    // Workshop content is a separate, locally rendered practice library. It
+    // must not be rewritten into the remote member-course content flow.
+    if (publicCourseCodes.has(courseCode) || courseCode === 'workshops') return;
 
     const requestPath = parts.slice(1).join('/');
     if (requestPath === 'intro.md' || requestPath === 'intro.mdx') {
@@ -111,7 +113,7 @@ export default function hackstartCoursesManifestPlugin(context: LoadContext): Pl
       );
       const docsPaths = Array.from(new Set(docs.map((doc) =>
         doc.source.match(/^@site\/docs\/([^/]+)\//)?.[1],
-      ).filter((value): value is string => Boolean(value))));
+      ).filter((value): value is string => Boolean(value) && value !== 'workshops')));
 
       const courses: CourseManifestRow[] = [];
       for (const docsPath of docsPaths) {

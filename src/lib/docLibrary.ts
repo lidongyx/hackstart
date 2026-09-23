@@ -35,8 +35,10 @@ export const docLibrarySections: Record<DocLibrarySection, {
 export function getDocLibrarySection(value: string): DocLibrarySection | undefined {
   const normalized = value.replace(/^\/docs\//, '').replace(/^\/+/, '');
   const parts = normalized.replace(/\/$/, '').split('/');
-  if (parts.length < 2 && !docLibrarySections[parts[0]]) return undefined;
-  return parts[0] || undefined;
+  const section = parts[0] || '';
+  // Workshop documents are a separate practice system. They must not inherit
+  // the member-course sidebar or CourseAccessGate used by the course library.
+  return docLibrarySections[section] ? section : undefined;
 }
 
 export function isDocLibraryIntro(id: string): boolean {

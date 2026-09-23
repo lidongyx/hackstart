@@ -179,7 +179,10 @@ export async function fetchCurrentSub2ApiUser(signal?: AbortSignal): Promise<Sub
     signal,
   });
 
-  if (response.status === 401) return null;
+  if (response.status === 401) {
+    clearSub2ApiAuth();
+    return null;
+  }
   if (!response.ok) throw new Error(`无法确认登录状态（HTTP ${response.status}）`);
 
   return unwrapUser(await response.json() as AuthResponse | Sub2ApiUser | null);

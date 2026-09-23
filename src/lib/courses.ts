@@ -8,6 +8,10 @@ export type HackstartCourse = {
   access_mode: 'public' | 'member';
   position: number;
   published: boolean;
+  category?: string;
+  group?: string;
+  nav_group?: string;
+  summary?: string;
 };
 
 type CourseResponse = {

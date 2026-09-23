@@ -118,7 +118,7 @@ export default function ResourceDetail(): React.ReactNode {
         <main className={styles.shell}>
           <ResourceSidebar activeCategory="skills" />
           <section className={styles.skillPage}>
-            <Link className={styles.skillBackLink} to="/?category=skills">← 返回 Skill Atlas</Link>
+            <Link className={styles.skillBackLink} to="/resources/?category=skills">← 返回 Skill Atlas</Link>
             <article className={styles.skillHero}>
               <div className={styles.skillIdentity}>
                 <img className={styles.skillAvatar} src={resource.authorAvatarUrl || '/img/hackstart.jpeg'} alt="" />

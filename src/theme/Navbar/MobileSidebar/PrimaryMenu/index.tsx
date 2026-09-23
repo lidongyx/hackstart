@@ -39,7 +39,7 @@ export default function NavbarMobilePrimaryMenu(): ReactNode {
   const {colorMode, setColorMode} = useColorMode();
   const nextColorMode = colorMode === 'dark' ? 'light' : 'dark';
   const courses = useHackstartCourses();
-  const resourceItems = categories.map((item) => ({label: item.label, href: `/?category=${item.id}`}));
+  const resourceItems = categories.map((item) => ({label: item.label, href: `/resources/?category=${item.id}`}));
   const courseItems = courses.map((course) => ({label: course.title, href: courseIntroPath(course)}));
 
   return (

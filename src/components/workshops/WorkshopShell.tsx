@@ -4,7 +4,7 @@ import {useLocation} from '@docusaurus/router';
 import {ChevronDown, CircleUserRound, LogIn, LogOut, UserRound, Wrench} from 'lucide-react';
 
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
-import {fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import {logoutRemote} from '@site/src/lib/api';
 import {usePublicWorkshops, useWorkshopSelection, workshopDocsURL, type Workshop} from '@site/src/lib/workshops';
 import styles from './workspace.module.css';
@@ -14,7 +14,7 @@ type Props = {children: ReactNode};
 const primaryLinks = [
   {href: '/', label: '学习路径'},
   {href: '/workshop/', label: 'Workshop'},
-  {href: '/?category=modeling', label: '资源'},
+  {href: '/resources/?category=modeling', label: '资源'},
   {href: '/community/', label: '社区'},
   {href: '/membership/', label: '年度会员'},
 ];
@@ -39,10 +39,29 @@ function AccountControl() {
 
   useEffect(() => {
     let mounted = true;
+    const initialUser = getStoredSub2ApiUser();
+    if (initialUser) {
+      setUser(initialUser);
+      setReady(true);
+    }
     const sync = () => {
+      const cachedUser = getStoredSub2ApiUser();
       void fetchCurrentSub2ApiUser()
-        .then((value) => { if (mounted) { setUser(value); setReady(true); } })
-        .catch(() => { if (mounted) { setUser(null); setReady(true); } });
+        .then((value) => {
+          if (mounted) {
+            setUser(value || cachedUser);
+            setReady(true);
+          }
+        })
+        .catch(() => {
+          if (mounted) {
+            // A cached login is still usable by the authenticated API calls;
+            // keep the account UI stable when the profile check is transiently
+            // unavailable.
+            setUser(cachedUser);
+            setReady(true);
+          }
+        });
     };
     sync();
     const unsubscribe = subscribeToSub2ApiAuth(sync);

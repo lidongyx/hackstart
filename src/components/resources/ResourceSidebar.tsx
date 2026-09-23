@@ -134,7 +134,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         {section === 'resources' && <>
           <p className={styles.label}>浏览资源</p>
           <nav aria-label="资源导航" className={styles.nav}>
-            {categories.map((item) => <Link key={item.id} className={clsx(styles.item, activeCategory === item.id && styles.active)} to={`/?category=${item.id}`} onClick={(event) => {
+            {categories.map((item) => <Link key={item.id} className={clsx(styles.item, activeCategory === item.id && styles.active)} to={`/resources/?category=${item.id}`} onClick={(event) => {
               if (!onCategorySelect) return;
               event.preventDefault();
               onCategorySelect(item.id);

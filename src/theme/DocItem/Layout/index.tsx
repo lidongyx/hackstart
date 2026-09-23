@@ -61,7 +61,9 @@ export default function DocItemLayout({children}: Props): ReactNode {
         <DocItemPaginator />
       </>
     );
-    return <div className={styles.libraryDetail}><CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate></div>;
+    // The intro is the public catalogue for a course. Keep its chapter list
+    // readable before membership; only individual chapters require access.
+    return <div className={styles.libraryDetail}>{isDocLibraryIntro(metadata.id) ? article : <CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
   }
 
   return (

@@ -170,7 +170,6 @@ export const modelingSubcategories = [
 
 export const codexLinks = [
   {id: 'codexstart', label: 'CodexStart 零基础课程', href: '/docs/codexstart/intro/'},
-  {id: 'workshops', label: 'Workshop 任务目录', href: '/docs/workshops/intro/'},
 ];
 
 export const seedResources: Resource[] = [
