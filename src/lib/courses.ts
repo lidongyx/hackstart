@@ -38,6 +38,10 @@ function normalizedCourses(items: HackstartCourse[] | undefined) {
   const byCode = new Map<string, HackstartCourse>();
   for (const item of items || []) {
     if (item.published === false || !item.code || !item.docs_path || !item.title) continue;
+    // Workshop is a separate practice system with its own navigation and
+    // should never appear in the member course library.
+    const docsPath = item.docs_path.replace(/^\/+|\/+$/g, '').toLowerCase();
+    if (item.code.toLowerCase() === 'workshop' || docsPath === 'workshop' || docsPath === 'workshops' || docsPath.startsWith('workshops/')) continue;
     byCode.set(item.code, {
       ...item,
       access_mode: 'member',
