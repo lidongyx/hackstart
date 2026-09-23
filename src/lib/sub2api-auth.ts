@@ -106,6 +106,18 @@ export function getSub2ApiToken(): string | null {
   return window.localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
+export function getStoredSub2ApiUser(): Sub2ApiUser | null {
+  if (typeof window === 'undefined') return null;
+  const raw = window.localStorage.getItem(AUTH_USER_KEY);
+  if (!raw) return null;
+  try {
+    const user = JSON.parse(raw) as Sub2ApiUser;
+    return user && typeof user === 'object' ? user : null;
+  } catch {
+    return null;
+  }
+}
+
 export function getSub2ApiAuthHeaders(init?: HeadersInit): Headers {
   const headers = new Headers(init);
   const token = getSub2ApiToken();

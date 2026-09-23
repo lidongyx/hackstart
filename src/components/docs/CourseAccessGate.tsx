@@ -23,7 +23,7 @@ type Props = {
 export default function CourseAccessGate({course, courseStatus = 'ready', children}: Props): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const accessApiBaseURL = String(siteConfig.customFields?.courseAccessApiBaseUrl || '');
-  const [state, setState] = useState<State>(courseStatus === 'ready' && course?.access_mode === 'public' ? 'allowed' : 'loading');
+  const [state, setState] = useState<State>('loading');
 
   useEffect(() => {
     if (courseStatus === 'loading') {
@@ -32,10 +32,6 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
     }
     if (courseStatus === 'error' || !course) {
       setState('error');
-      return;
-    }
-    if (course.access_mode === 'public') {
-      setState('allowed');
       return;
     }
     if (!accessApiBaseURL) {

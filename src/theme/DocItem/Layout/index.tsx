@@ -61,8 +61,7 @@ export default function DocItemLayout({children}: Props): ReactNode {
         <DocItemPaginator />
       </>
     );
-    const isCourseIndex = isDocLibraryIntro(metadata.id);
-    return <div className={styles.libraryDetail}>{isCourseIndex ? article : <CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
+    return <div className={styles.libraryDetail}><CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate></div>;
   }
 
   return (

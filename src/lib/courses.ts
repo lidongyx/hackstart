@@ -20,9 +20,9 @@ export type HackstartCoursesState = {
 };
 
 export const defaultCourseAccessModes: Record<string, HackstartCourse['access_mode']> = {
-  integration: 'public',
-  usecase: 'public',
-  'plugin-skill-handbook': 'public',
+  integration: 'member',
+  usecase: 'member',
+  'plugin-skill-handbook': 'member',
   codexstart: 'member',
 };
 
@@ -36,7 +36,7 @@ function normalizedCourses(items: HackstartCourse[] | undefined) {
     if (item.published === false || !item.code || !item.docs_path || !item.title) continue;
     byCode.set(item.code, {
       ...item,
-      access_mode: item.access_mode === 'public' ? 'public' : 'member',
+      access_mode: 'member',
     });
   }
   return [...byCode.values()]

@@ -40,8 +40,7 @@ export default function NavbarMobilePrimaryMenu(): ReactNode {
   const nextColorMode = colorMode === 'dark' ? 'light' : 'dark';
   const courses = useHackstartCourses();
   const resourceItems = categories.map((item) => ({label: item.label, href: `/?category=${item.id}`}));
-  const publicCourseItems = courses.filter((course) => course.access_mode === 'public').map((course) => ({label: course.title, href: courseIntroPath(course)}));
-  const memberCourseItems = courses.filter((course) => course.access_mode === 'member').map((course) => ({label: course.title, href: courseIntroPath(course)}));
+  const courseItems = courses.map((course) => ({label: course.title, href: courseIntroPath(course)}));
 
   return (
     <nav className="hs-mobile-docs-panel" aria-label="站点菜单">
@@ -55,13 +54,9 @@ export default function NavbarMobilePrimaryMenu(): ReactNode {
       <ul className="menu__list hs-mobile-docs-menu">
         <MobileMenuLink item={{label: '技术交流', href: '/community/'}} />
       </ul>
-      <div className="hs-mobile-docs-title">公开课程</div>
+      <div className="hs-mobile-docs-title">系列课程</div>
       <ul className="menu__list hs-mobile-docs-menu">
-        {publicCourseItems.map((item) => <MobileMenuLink key={item.href} item={item} />)}
-      </ul>
-      <div className="hs-mobile-docs-title">会员系列</div>
-      <ul className="menu__list hs-mobile-docs-menu">
-        {memberCourseItems.map((item) => <MobileMenuLink key={item.href} item={item} />)}
+        {courseItems.map((item) => <MobileMenuLink key={item.href} item={item} />)}
       </ul>
       <div className="hs-mobile-docs-footer">
         <button type="button" className="hs-mobile-docs-theme-toggle" onClick={() => setColorMode(nextColorMode)}>

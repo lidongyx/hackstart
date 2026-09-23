@@ -132,7 +132,7 @@ export default function MembershipPage(): ReactNode {
             <aside className={styles.priceCard}>
               <div className={styles.priceCardTop}><Crown /><span>年度会员</span></div>
               <div className={styles.price}>¥{(priceCents / 100).toFixed(0)}<small> / 年</small></div>
-              <p>开通后一年内可阅读会员系列全部内容，公开课程无需开通即可阅读。</p>
+              <p>开通后一年内可阅读系列课程的全部内容，课程与文章统一按会员权限开放。</p>
               <strong>内容越丰富，价格会持续上涨</strong>
             </aside>
           </section>
@@ -140,7 +140,7 @@ export default function MembershipPage(): ReactNode {
           <section className={styles.valueSection}>
             <div className={styles.sectionHeading}>
               <Heading as="h2">会员能看到什么</Heading>
-              <p>公开课程可以直接阅读；会员系列的课程介绍和目录始终开放，文章详情需要 HackStart 会员。</p>
+              <p>系列课程、课程目录和文章统一按会员权限开放，开通后即可完整阅读。</p>
             </div>
             <div className={styles.valueList}>
               <div><BookOpenText /><span><strong>CodexStart 零基础课程</strong><small>从第一次使用到完整工作流，按步骤建立实践能力。</small></span></div>

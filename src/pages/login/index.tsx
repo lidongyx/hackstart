@@ -25,9 +25,12 @@ export default function LoginPage(): React.ReactNode {
     setBusy(true);
     setError('');
     try {
-      await loginWithSub2Api(email.trim(), password);
+      const response = await loginWithSub2Api(email.trim(), password);
+      // The login endpoint already returns the user. Keep the redirect independent
+      // from the profile endpoint so a successful login never gets stranded here.
+      if (response.user) window.localStorage.setItem('auth_user', JSON.stringify(response.user));
       await fetchCurrentSub2ApiUser().catch(() => null);
-      window.location.assign(redirect);
+      window.location.replace(redirect);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '登录失败，请稍后重试');
     } finally {

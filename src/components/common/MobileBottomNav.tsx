@@ -23,7 +23,7 @@ import {
 import clsx from 'clsx';
 
 import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
-import {fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 
 type MenuKey = 'home' | 'workshop' | 'docs' | 'community' | 'account';
@@ -62,12 +62,12 @@ function MobileBottomNavContent(): ReactNode {
       void fetchCurrentSub2ApiUser()
         .then((user) => {
           if (!mounted) return;
-          setCurrentUser(user);
+          setCurrentUser(user || getStoredSub2ApiUser());
           setAuthReady(true);
         })
         .catch(() => {
           if (!mounted) return;
-          setCurrentUser(null);
+          setCurrentUser(getStoredSub2ApiUser());
           setAuthReady(true);
         });
     };
@@ -103,7 +103,7 @@ function MobileBottomNavContent(): ReactNode {
   const communityItems: MenuItem[] = [
     {label: '技术交流', href: '/community/', icon: <MessagesSquare />},
   ];
-  const docsItems: MenuItem[] = courses.filter((course) => course.access_mode === 'public').map((course) => ({
+  const docsItems: MenuItem[] = courses.map((course) => ({
     label: course.title,
     href: courseIntroPath(course),
     icon: courseIcon(course.docs_path),
@@ -126,13 +126,12 @@ function MobileBottomNavContent(): ReactNode {
     {label: '回到首页', href: '/', icon: <Home />},
     {label: '年度会员', href: '/membership/', icon: <Crown />},
   ];
-  const memberDocItems: MenuItem[] = courses.filter((course) => course.access_mode === 'member').map((course) => ({label: course.title, href: courseIntroPath(course), icon: <Crown />}));
   const menuItems = openMenu === 'home'
     ? homeItems
     : openMenu === 'workshop'
       ? workshopItems
       : openMenu === 'docs'
-        ? [...docsItems, ...memberDocItems]
+        ? docsItems
         : openMenu === 'community'
           ? communityItems
           : [];

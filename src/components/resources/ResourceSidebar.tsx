@@ -24,7 +24,7 @@ import {
 
 import {categories, codexLinks, type ResourceCategory} from '@site/src/lib/resources';
 import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
-import {fetchCurrentSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
+import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 import styles from './ResourceSidebar.module.css';
 
@@ -58,12 +58,12 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
       void fetchCurrentSub2ApiUser()
         .then((user) => {
           if (!mounted) return;
-          setCurrentUser(user);
+          setCurrentUser(user || getStoredSub2ApiUser());
           setAuthReady(true);
         })
         .catch(() => {
           if (!mounted) return;
-          setCurrentUser(null);
+          setCurrentUser(getStoredSub2ApiUser());
           setAuthReady(true);
         });
     };
@@ -149,9 +149,9 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           </Link>
         </nav>
 
-        <p className={styles.label}>公开课程</p>
-        <nav aria-label="公开课程" className={styles.nav}>
-          {courses.filter((course) => course.access_mode === 'public').map((course) => {
+        <p className={styles.label}>系列课程</p>
+        <nav aria-label="系列课程" className={styles.nav}>
+          {courses.map((course) => {
             const href = courseIntroPath(course);
             return (
             <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
@@ -167,17 +167,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           })}
         </nav>
 
-        <p className={styles.label}>会员系列</p>
-        <nav aria-label="会员系列" className={styles.nav}>
-          {courses.filter((course) => course.access_mode === 'member').map((course) => {
-            const href = courseIntroPath(course);
-            return (
-            <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
-              <span className={styles.icon} aria-hidden="true"><Crown /></span>
-              <span className={styles.copy}><strong>{course.title}</strong></span>
-            </Link>
-            );
-          })}
+        <nav aria-label="会员服务" className={styles.nav}>
           <Link className={clsx(styles.item, pathname.startsWith('/membership') && styles.active)} to="/membership/">
             <span className={styles.icon} aria-hidden="true"><Crown /></span>
             <span className={styles.copy}><strong>年度会员服务</strong></span>
