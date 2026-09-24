@@ -47,6 +47,39 @@ test('document anchors do not change credentials', () => {
   assert.equal(storage.get('auth_token'), 'legacy-token');
 });
 
+test('wrapped login response stores credentials and returns the login payload', async () => {
+  storage.clear();
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    assert.equal(String(input), 'https://hackstart.org/api/v1/auth/login');
+    assert.equal(init.method, 'POST');
+    assert.deepEqual(JSON.parse(init.body), {email: 'user@example.com', password: 'secret'});
+    return json({
+      code: 0,
+      message: 'success',
+      data: {
+        access_token: 'wrapped-access',
+        refresh_token: 'wrapped-refresh',
+        expires_in: 3600,
+        user: {id: 7, email: 'user@example.com'},
+      },
+    });
+  };
+
+  try {
+    const result = await auth.loginWithSub2Api('user@example.com', 'secret');
+    assert.equal(result.access_token, 'wrapped-access');
+    assert.equal(result.refresh_token, 'wrapped-refresh');
+    assert.deepEqual(result.user, {id: 7, email: 'user@example.com'});
+    assert.equal(storage.get('auth_token'), 'wrapped-access');
+    assert.equal(storage.get('refresh_token'), 'wrapped-refresh');
+    assert.ok(Number(storage.get('token_expires_at')) > Date.now());
+    assert.deepEqual(JSON.parse(storage.get('auth_user')), {id: 7, email: 'user@example.com'});
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
+});
+
 test('concurrent 401s refresh once and retry with the rotated bearer', async () => {
   storage.set('auth_token', 'expired'); storage.set('refresh_token', 'refresh');
   let refreshes = 0;

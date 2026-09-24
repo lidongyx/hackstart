@@ -5,6 +5,7 @@ import {ArrowRight, BookOpen, Layers3, LoaderCircle, Shapes, Wrench} from 'lucid
 
 import {bookCategoryGroups, bookCatalog} from '@site/src/lib/bookCatalog';
 import {courseIntroPath, useHackstartCoursesState, type HackstartCourse} from '@site/src/lib/courses';
+import CourseSidebarMenu from '@site/src/components/courses/CourseSidebarMenu';
 import styles from './courses.module.css';
 
 const fallbackCategory = '其他课程';
@@ -56,28 +57,11 @@ export default function Home(): React.ReactNode {
     if (activeCategory === 'creation') return courses.filter((course) => ['creation', 'interaction'].includes(courseCategoryKey(course)));
     return courses.filter((course) => courseCategoryKey(course) === activeCategory);
   }, [activeCategory, courses]);
-  const sidebarGroups = useMemo(() => {
-    const groups = bookCategoryGroups.map((group) => ({...group, courses: [] as HackstartCourse[]}));
-    const other = {key: 'other' as const, label: '其他小册', courses: [] as HackstartCourse[]};
-    for (const course of courses) {
-      const group = groups.find((item) => item.key === courseCategoryKey(course));
-      (group || other).courses.push(course);
-    }
-    return other.courses.length ? [...groups, other] : groups;
-  }, [courses]);
-
   return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，从公开目录开始学习。">
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
-          <nav className={styles.sidebarGroups} aria-label="系列课程分类">
-            {sidebarGroups.map((group) => <section className={styles.sidebarGroup} data-group={group.key} key={group.key}>
-              <h2 className={styles.sidebarGroupTitle}>{group.label}</h2>
-              <div className={styles.sidebarCourseList}>
-                {group.courses.map((course) => { const Icon = categoryIcon(group.key === 'other' ? 'all' : group.key); return <Link className={styles.sidebarCourse} key={course.code} to={courseIntroPath(course)}><span className={styles.sidebarCourseIcon}><Icon aria-hidden="true" /></span><span>{course.title}</span></Link>; })}
-              </div>
-            </section>)}
-          </nav>
+          <CourseSidebarMenu courses={courses} />
           <div className={styles.sidebarNote}><span>LEARN BY DOING</span><p>每本小册都从目标、输入和交付结果出发。</p></div>
         </aside>
 

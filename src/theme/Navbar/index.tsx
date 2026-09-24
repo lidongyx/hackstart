@@ -5,7 +5,7 @@ import {BookOpen, Boxes, Crown, MessagesSquare, Wrench} from 'lucide-react';
 
 const items = [
   {label: '系列课程', href: '/book/', icon: BookOpen, match: (path: string) => path === '/' || path === '/book/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/'))},
-  {label: 'Workshop', href: '/workshop/', icon: Wrench, match: (path: string) => path.startsWith('/workshop')},
+  {label: 'Workshop', href: '/workshop/', icon: Wrench, match: (path: string) => path.startsWith('/workshop') || path.startsWith('/docs/workshops/')},
   {label: '资源导航', href: '/resources/?category=modeling', icon: Boxes, match: (path: string) => path.startsWith('/resources')},
   {label: '社区', href: '/community/', icon: MessagesSquare, match: (path: string) => path.startsWith('/community')},
   {label: '永久会员', href: '/membership/', icon: Crown, match: (path: string) => path.startsWith('/membership') || path.startsWith('/account') || path.startsWith('/profile')},
@@ -13,10 +13,6 @@ const items = [
 
 export default function Navbar(): React.ReactNode {
   const {pathname} = useLocation();
-  // Workshop pages render their own workspace shell, including the primary
-  // navigation and account control. Keeping the site navbar here would create
-  // two stacked navigation bars on those routes.
-  if (pathname.startsWith('/workshop')) return null;
 
   return <header className="navbar hs-top-navbar">
     <div className="hs-top-navbar__inner">

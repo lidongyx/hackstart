@@ -35,28 +35,49 @@ export function configureSub2ApiAuth(url?: string, baseURL?: string): void {
   }
 }
 
-type LoginResponse = {
+type LoginPayload = {
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
+  user?: Sub2ApiUser;
+};
+
+type LoginResponse = LoginPayload & {
+  data?: LoginPayload | null;
+  message?: string;
+  error?: string;
+};
+
+export type Sub2ApiLoginResult = {
   access_token: string;
   refresh_token?: string;
   expires_in?: number;
   user?: Sub2ApiUser;
 };
 
-export async function loginWithSub2Api(email: string, password: string): Promise<LoginResponse> {
+export async function loginWithSub2Api(email: string, password: string): Promise<Sub2ApiLoginResult> {
   const response = await fetch(`${sub2ApiBaseURL}/auth/login`, {
     method: 'POST',
     credentials: 'omit',
     headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
     body: JSON.stringify({email, password}),
   });
-  const body = await response.json().catch(() => ({})) as LoginResponse & {message?: string; error?: string};
-  if (!response.ok || !body.access_token) throw new Error(body.message || body.error || '登录失败，请检查邮箱和密码');
-  window.localStorage.setItem(AUTH_TOKEN_KEY, body.access_token);
-  if (body.refresh_token) window.localStorage.setItem(REFRESH_TOKEN_KEY, body.refresh_token);
-  if (body.expires_in) window.localStorage.setItem(TOKEN_EXPIRES_AT_KEY, String(Date.now() + body.expires_in * 1000));
-  if (body.user) window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(body.user));
+  const body = await response.json().catch(() => ({})) as LoginResponse;
+  const payload = body.data && typeof body.data === 'object' ? body.data : body;
+  if (!response.ok || !payload.access_token) throw new Error(body.message || body.error || '登录失败，请检查邮箱和密码');
+
+  const result: Sub2ApiLoginResult = {
+    access_token: payload.access_token,
+    refresh_token: payload.refresh_token,
+    expires_in: payload.expires_in,
+    user: payload.user,
+  };
+  window.localStorage.setItem(AUTH_TOKEN_KEY, result.access_token);
+  if (result.refresh_token) window.localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
+  if (result.expires_in) window.localStorage.setItem(TOKEN_EXPIRES_AT_KEY, String(Date.now() + result.expires_in * 1000));
+  if (result.user) window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(result.user));
   notifySub2ApiAuthChanged();
-  return body;
+  return result;
 }
 
 export function consumeAuthTokenFromFragment(): void {
