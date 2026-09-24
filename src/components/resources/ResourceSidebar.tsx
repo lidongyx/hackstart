@@ -5,8 +5,6 @@ import {useLocation} from '@docusaurus/router';
 import {useColorMode} from '@docusaurus/theme-common';
 import {
   BookOpenText,
-  Boxes,
-  Cable,
   CodeXml,
   ChevronDown,
   Crown,
@@ -22,7 +20,8 @@ import {
 } from 'lucide-react';
 
 import {categories, type ResourceCategory} from '@site/src/lib/resources';
-import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
+import {useHackstartCourses} from '@site/src/lib/courses';
+import CourseSidebarMenu from '@site/src/components/courses/CourseSidebarMenu';
 import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 import styles from './ResourceSidebar.module.css';
@@ -33,12 +32,6 @@ type Props = {
   readonly embedded?: boolean;
   readonly membershipMode?: boolean;
 };
-
-function isActiveSiteLink(pathname: string, href: string) {
-  if (href === '/qrcode') return pathname === href || pathname === `${href}/`;
-  const base = href.replace(/intro\/?$/, '');
-  return pathname === href || pathname === href.replace(/\/$/, '') || pathname.startsWith(base);
-}
 
 export default function ResourceSidebar({activeCategory, onCategorySelect, embedded = false, membershipMode = false}: Props): ReactNode {
   const {colorMode, setColorMode} = useColorMode();
@@ -105,31 +98,8 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         : pathname.startsWith('/community')
           ? 'community'
           : 'resources';
-  const sectionMeta = {
-    resources: {label: '资源导航', subtitle: 'RESOURCE LIBRARY'},
-    courses: {label: '系列小册', subtitle: 'BOOK LIBRARY'},
-    workshop: {label: 'Workshop', subtitle: 'PRACTICE LAB'},
-    community: {label: '社区', subtitle: 'COMMUNITY'},
-    membership: {label: '永久会员', subtitle: 'MEMBERSHIP'},
-  }[section];
-
-  const iconForCourse = (docsPath: string) => {
-    if (docsPath === 'integration') return <Cable />;
-    if (docsPath === 'usecase') return <Boxes />;
-    if (docsPath === 'plugin-skill-handbook') return <BookOpenText />;
-    return <Crown />;
-  };
-
   return (
     <aside className={clsx(styles.sidebar, embedded && styles.embedded)}>
-      <Link className={styles.brand} to="/" aria-label="HackStart 首页">
-        <img src="/img/hackstart.jpeg" alt="" />
-        <span>
-          HackStart
-          <small>{sectionMeta.subtitle}</small>
-        </span>
-      </Link>
-
       <div ref={scrollRef} className={styles.scroll}>
         {section === 'resources' && <>
           <p className={styles.label}>浏览资源</p>
@@ -145,18 +115,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           </nav>
         </>}
 
-        {section === 'courses' && <>
-          <p className={styles.label}>系列小册</p>
-          <nav aria-label="系列课程" className={styles.nav}>
-            {courses.map((course) => {
-              const href = courseIntroPath(course);
-              return <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
-                <span className={styles.icon} aria-hidden="true">{course.access_mode === 'public' ? <BookOpenText /> : iconForCourse(course.docs_path)}</span>
-                <span className={styles.copy}><strong>{course.title}</strong><small>{course.access_mode === 'public' ? '公开小册' : '会员专属课程'}</small></span>
-              </Link>;
-            })}
-          </nav>
-        </>}
+        {section === 'courses' && <CourseSidebarMenu courses={courses} pathname={pathname} />}
 
         {section === 'workshop' && <>
           <p className={styles.label}>实践任务</p>

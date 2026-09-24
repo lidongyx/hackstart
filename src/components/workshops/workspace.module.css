@@ -4,7 +4,8 @@
 .brand:hover { color: var(--hs-primary); text-decoration: none; }
 .brand img { width: 33px; height: 33px; border-radius: 9px; object-fit: cover; }
 .primaryNav { display: flex; align-items: center; gap: 4px; padding: 0 18px; }
-.primaryNav a { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px; color: var(--hs-muted); font-size: 12px; font-weight: 750; text-decoration: none; }
+.primaryNav a { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px; color: var(--hs-muted); font-size: 12px; font-weight: 750; text-decoration: none; }
+.primaryNav a svg { width: 15px; height: 15px; }
 .primaryNav a:hover { border-color: var(--hs-line); background: var(--hs-primary-soft); color: var(--hs-primary); text-decoration: none; }
 .primaryNav .active { border-color: #a6ddd2; background: #effaf7; color: #087c6b; }
 .topbarAccount { display: flex; align-items: center; margin-left: auto; padding: 0 15px; }

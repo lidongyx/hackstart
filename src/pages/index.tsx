@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import {ArrowRight, BookOpen, CodeXml, Layers3, LoaderCircle, Shapes, Wrench} from 'lucide-react';
+import {ArrowRight, BookOpen, Layers3, LoaderCircle, Shapes, Wrench} from 'lucide-react';
 
 import {bookCategoryGroups, bookCatalog} from '@site/src/lib/bookCatalog';
 import {courseIntroPath, useHackstartCoursesState, type HackstartCourse} from '@site/src/lib/courses';
@@ -56,17 +56,27 @@ export default function Home(): React.ReactNode {
     if (activeCategory === 'creation') return courses.filter((course) => ['creation', 'interaction'].includes(courseCategoryKey(course)));
     return courses.filter((course) => courseCategoryKey(course) === activeCategory);
   }, [activeCategory, courses]);
-  const counts = useMemo(() => bookCategoryGroups.map((group) => ({...group, count: courses.filter((course) => courseCategoryKey(course) === group.key).length})), [courses]);
+  const sidebarGroups = useMemo(() => {
+    const groups = bookCategoryGroups.map((group) => ({...group, courses: [] as HackstartCourse[]}));
+    const other = {key: 'other' as const, label: '其他小册', courses: [] as HackstartCourse[]};
+    for (const course of courses) {
+      const group = groups.find((item) => item.key === courseCategoryKey(course));
+      (group || other).courses.push(course);
+    }
+    return other.courses.length ? [...groups, other] : groups;
+  }, [courses]);
 
   return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，从公开目录开始学习。">
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
-          <div className={styles.sidebarBrand}><span className={styles.sidebarLogo}><CodeXml /></span><div><strong>HackStart</strong><small>BOOK LIBRARY</small></div></div>
-          <p className={styles.sidebarLabel}>浏览小册</p>
-          <nav className={styles.sidebarNav}>
-            <button type="button" className={activeCategory === 'all' ? styles.sidebarActive : ''} onClick={() => setActiveCategory('all')}><BookOpen /><span><strong>全部小册</strong><small>{courses.length} 个系列</small></span></button>
-            {counts.map((group) => { const Icon = categoryIcon(group.key); return <button type="button" className={activeCategory === group.key ? styles.sidebarActive : ''} key={group.key} onClick={() => setActiveCategory(group.key)}><Icon /><span><strong>{group.label}</strong><small>{group.count} 个系列</small></span></button>; })}
+          <nav className={styles.sidebarGroups} aria-label="系列课程分类">
+            {sidebarGroups.map((group) => <section className={styles.sidebarGroup} data-group={group.key} key={group.key}>
+              <h2 className={styles.sidebarGroupTitle}>{group.label}</h2>
+              <div className={styles.sidebarCourseList}>
+                {group.courses.map((course) => { const Icon = categoryIcon(group.key === 'other' ? 'all' : group.key); return <Link className={styles.sidebarCourse} key={course.code} to={courseIntroPath(course)}><span className={styles.sidebarCourseIcon}><Icon aria-hidden="true" /></span><span>{course.title}</span></Link>; })}
+              </div>
+            </section>)}
           </nav>
           <div className={styles.sidebarNote}><span>LEARN BY DOING</span><p>每本小册都从目标、输入和交付结果出发。</p></div>
         </aside>
@@ -77,7 +87,7 @@ export default function Home(): React.ReactNode {
             <span className={styles.headerMark}>LEARN<br />BY<br />DOING</span>
           </header>
           <div className={styles.tabs} role="tablist" aria-label="系列课程分类">
-            <button type="button" className={activeCategory === 'all' ? styles.active : undefined} onClick={() => setActiveCategory('all')}><CodeXml />技术小册</button>
+            <button type="button" className={activeCategory === 'all' ? styles.active : undefined} onClick={() => setActiveCategory('all')}><BookOpen />技术小册</button>
             <button type="button" className={activeCategory === 'foundation' ? styles.active : undefined} onClick={() => setActiveCategory('foundation')}><Layers3 />入门基础</button>
             <button type="button" className={activeCategory === 'creation' || activeCategory === 'interaction' ? styles.active : undefined} onClick={() => setActiveCategory('creation')}><Wrench />创作与应用</button>
           </div>

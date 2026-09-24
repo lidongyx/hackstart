@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState, type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import {useLocation} from '@docusaurus/router';
-import {ChevronDown, CircleUserRound, LogIn, LogOut, UserRound, Wrench} from 'lucide-react';
+import {BookOpen, Boxes, ChevronDown, CircleUserRound, Crown, LogIn, LogOut, MessagesSquare, UserRound, Wrench} from 'lucide-react';
 
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
@@ -12,11 +12,11 @@ import styles from './workspace.module.css';
 type Props = {children: ReactNode};
 
 const primaryLinks = [
-  {href: '/', label: '学习路径'},
-  {href: '/workshop/', label: 'Workshop'},
-  {href: '/resources/?category=modeling', label: '资源'},
-  {href: '/community/', label: '社区'},
-  {href: '/membership/', label: '年度会员'},
+  {href: '/', label: '学习路径', icon: BookOpen, match: (path: string) => path === '/' || path === '/book/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/'))},
+  {href: '/workshop/', label: 'Workshop', icon: Wrench, match: (path: string) => path.startsWith('/workshop') || path.startsWith('/docs/workshops/')},
+  {href: '/resources/?category=modeling', label: '资源导航', icon: Boxes, match: (path: string) => path.startsWith('/resources')},
+  {href: '/community/', label: '社区', icon: MessagesSquare, match: (path: string) => path.startsWith('/community')},
+  {href: '/membership/', label: '年度会员', icon: Crown, match: (path: string) => path.startsWith('/membership') || path.startsWith('/account') || path.startsWith('/profile')},
 ];
 
 function workshopHref(item: Workshop, pathname: string) {
@@ -110,7 +110,7 @@ export default function WorkshopShell({children}: Props): ReactNode {
     <header className={styles.topbar}>
       <Link to="/" className={styles.brand} aria-label="HackStart 首页"><img src="/img/hackstart.jpeg" alt="" /><span>HackStart</span></Link>
       <nav className={styles.primaryNav} aria-label="主要导航">
-        {primaryLinks.map((item) => <Link key={item.href} to={item.href} className={item.href === '/workshop/' ? styles.active : undefined}>{item.label}</Link>)}
+        {primaryLinks.map(({href, label, icon: Icon, match}) => <Link key={href} to={href} className={match(pathname) ? styles.active : undefined} aria-current={match(pathname) ? 'page' : undefined}><Icon aria-hidden="true" /><span>{label}</span></Link>)}
       </nav>
       <div className={styles.topbarAccount}><AccountControl /></div>
     </header>

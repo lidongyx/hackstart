@@ -29,6 +29,7 @@
   --ifm-color-primary-lightest: #63c8b6;
   --ifm-background-color: var(--hs-bg);
   --ifm-navbar-height: 74px;
+  --doc-sidebar-width: 288px;
   --ifm-code-font-size: 95%;
   --ifm-h1-font-size: 30px;
   --ifm-dropdown-link-color: #fff;
@@ -279,6 +280,13 @@ html[data-theme='dark'] #__docusaurus {
 .theme-doc-sidebar,
 .theme-doc-sidebar-menu {
   scrollbar-width: none;
+}
+
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    top: 72px;
+    height: calc(100vh - 72px);
+  }
 }
 
 .theme-doc-sidebar-container::-webkit-scrollbar,
