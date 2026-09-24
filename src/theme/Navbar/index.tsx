@@ -4,7 +4,7 @@ import {useLocation} from '@docusaurus/router';
 import {BookOpen, Boxes, Crown, MessagesSquare, Wrench} from 'lucide-react';
 
 const items = [
-  {label: '系列课程', href: '/', icon: BookOpen, match: (path: string) => path === '/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/'))},
+  {label: '系列课程', href: '/book/', icon: BookOpen, match: (path: string) => path === '/' || path === '/book/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/'))},
   {label: 'Workshop', href: '/workshop/', icon: Wrench, match: (path: string) => path.startsWith('/workshop')},
   {label: '资源导航', href: '/resources/?category=modeling', icon: Boxes, match: (path: string) => path.startsWith('/resources')},
   {label: '社区', href: '/community/', icon: MessagesSquare, match: (path: string) => path.startsWith('/community')},

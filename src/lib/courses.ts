@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useState} from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import {bookCatalog, bookEntryPath} from '@site/src/lib/bookCatalog';
 
 export type HackstartCourse = {
   code: string;
@@ -24,15 +25,24 @@ export type HackstartCoursesState = {
 };
 
 export const defaultCourseAccessModes: Record<string, HackstartCourse['access_mode']> = {
-  integration: 'member',
-  usecase: 'member',
-  'plugin-skill-handbook': 'member',
-  codexstart: 'member',
+  integration: 'public',
+  usecase: 'public',
+  'plugin-skill-handbook': 'public',
+  ...Object.fromEntries(bookCatalog.map((book) => [book.code, book.accessMode])),
 };
 
-export const fallbackCourses: readonly HackstartCourse[] = [
-  {code: 'codexstart', title: 'CodexStart 零基础课程', docs_path: 'codexstart', access_mode: defaultCourseAccessModes.codexstart, position: 4, published: true},
-];
+export const fallbackCourses: readonly HackstartCourse[] = bookCatalog.map((book) => ({
+  code: book.code,
+  title: book.title,
+  docs_path: book.docsPath,
+  access_mode: book.accessMode,
+  position: book.position,
+  published: true,
+  category: book.category,
+  group: book.category,
+  nav_group: book.category,
+  summary: book.summary,
+}));
 
 function normalizedCourses(items: HackstartCourse[] | undefined) {
   const byCode = new Map<string, HackstartCourse>();
@@ -44,15 +54,18 @@ function normalizedCourses(items: HackstartCourse[] | undefined) {
     if (item.code.toLowerCase() === 'workshop' || docsPath === 'workshop' || docsPath === 'workshops' || docsPath.startsWith('workshops/')) continue;
     byCode.set(item.code, {
       ...item,
-      access_mode: 'member',
+      access_mode: defaultCourseAccessModes[item.code] || item.access_mode || 'member',
     });
+  }
+  for (const fallback of fallbackCourses) {
+    if (!byCode.has(fallback.code)) byCode.set(fallback.code, fallback);
   }
   return [...byCode.values()]
     .sort((a, b) => a.position - b.position || a.title.localeCompare(b.title, 'zh-CN'));
 }
 
 export function courseIntroPath(course: HackstartCourse) {
-  return `/docs/${course.docs_path.replace(/^\/+|\/+$/g, '')}/intro/`;
+  return bookEntryPath({docsPath: course.docs_path.replace(/^\/+|\/+$/g, '')});
 }
 
 export function useHackstartCoursesState(): HackstartCoursesState {

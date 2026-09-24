@@ -2,7 +2,18 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {LoadContext, Plugin} from '@docusaurus/types';
 
-const publicCourseCodes = new Set(['integration', 'usecase', 'plugin-skill-handbook']);
+const publicCourseCodes = new Set([
+  'integration',
+  'usecase',
+  'plugin-skill-handbook',
+  'codex-knowledge-base',
+  'codex-office',
+  'codex-video-editing',
+  'codex-image-generation',
+  'codex-video-production',
+  'codex-3d-modeling',
+  'codex-game-development',
+]);
 
 function secureMemberDocRemarkPlugin() {
   return (tree: {children: Array<Record<string, unknown>>}, file: {path?: string; data?: {frontMatter?: {hide_title?: boolean}}}) => {
@@ -21,7 +32,7 @@ function secureMemberDocRemarkPlugin() {
     if (publicCourseCodes.has(courseCode) || courseCode === 'workshops') return;
 
     const requestPath = parts.slice(1).join('/');
-    if (requestPath === 'intro.md' || requestPath === 'intro.mdx') {
+    if (requestPath === 'intro.md' || requestPath === 'intro.mdx' || requestPath === 'info.md' || requestPath === 'info.mdx') {
       tree.children = tree.children.filter((child) =>
         child.type === 'mdxjsEsm' && typeof child.value === 'string' && child.value.includes('DocLibraryIndex') ||
         child.type === 'mdxJsxFlowElement' && child.name === 'DocLibraryIndex',
@@ -79,6 +90,13 @@ const defaultCourseAccessModes: Record<string, CourseManifestRow['access_mode']>
   usecase: 'public',
   'plugin-skill-handbook': 'public',
   codexstart: 'member',
+  'codex-knowledge-base': 'public',
+  'codex-office': 'public',
+  'codex-video-editing': 'public',
+  'codex-image-generation': 'public',
+  'codex-video-production': 'public',
+  'codex-3d-modeling': 'public',
+  'codex-game-development': 'public',
 };
 
 async function readCategory(siteDir: string, docsPath: string, category?: string) {

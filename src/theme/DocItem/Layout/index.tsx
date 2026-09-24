@@ -63,7 +63,8 @@ export default function DocItemLayout({children}: Props): ReactNode {
     );
     // The intro is the public catalogue for a course. Keep its chapter list
     // readable before membership; only individual chapters require access.
-    return <div className={styles.libraryDetail}>{isDocLibraryIntro(metadata.id) ? article : <CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
+    const isPublicCourse = course?.access_mode === 'public';
+    return <div className={styles.libraryDetail}>{isDocLibraryIntro(metadata.id) || isPublicCourse ? article : <CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
   }
 
   return (

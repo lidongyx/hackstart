@@ -31,7 +31,7 @@ function collectDocs(items: PropSidebar, introId: string, trail: string[] = []):
       return collectDocs(item.items, introId, [...trail, item.label]);
     }
 
-    if (item.type !== 'link' || !item.docId || item.docId === introId) {
+    if (item.type !== 'link' || !item.docId || item.docId === introId || item.docId.endsWith('/info')) {
       return [];
     }
 

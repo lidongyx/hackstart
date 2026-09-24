@@ -107,7 +107,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
           : 'resources';
   const sectionMeta = {
     resources: {label: '资源导航', subtitle: 'RESOURCE LIBRARY'},
-    courses: {label: '系列课程', subtitle: 'MEMBER COURSES'},
+    courses: {label: '系列小册', subtitle: 'BOOK LIBRARY'},
     workshop: {label: 'Workshop', subtitle: 'PRACTICE LAB'},
     community: {label: '社区', subtitle: 'COMMUNITY'},
     membership: {label: '永久会员', subtitle: 'MEMBERSHIP'},
@@ -146,13 +146,13 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         </>}
 
         {section === 'courses' && <>
-          <p className={styles.label}>会员课程</p>
+          <p className={styles.label}>系列小册</p>
           <nav aria-label="系列课程" className={styles.nav}>
             {courses.map((course) => {
               const href = courseIntroPath(course);
               return <Link className={clsx(styles.item, isActiveSiteLink(pathname, href) && styles.active)} key={course.code} to={href}>
-                <span className={styles.icon} aria-hidden="true">{iconForCourse(course.docs_path)}</span>
-                <span className={styles.copy}><strong>{course.title}</strong><small>会员专属课程</small></span>
+                <span className={styles.icon} aria-hidden="true">{course.access_mode === 'public' ? <BookOpenText /> : iconForCourse(course.docs_path)}</span>
+                <span className={styles.copy}><strong>{course.title}</strong><small>{course.access_mode === 'public' ? '公开小册' : '会员专属课程'}</small></span>
               </Link>;
             })}
           </nav>
