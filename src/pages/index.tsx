@@ -1,10 +1,11 @@
 import React, {useMemo, useState} from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import {ArrowRight, BookOpen, CodeXml, Layers3, LoaderCircle, Shapes, Wrench} from 'lucide-react';
+import {ArrowRight, BookOpen, Layers3, LoaderCircle, Shapes, Wrench} from 'lucide-react';
 
 import {bookCategoryGroups, bookCatalog} from '@site/src/lib/bookCatalog';
 import {courseIntroPath, useHackstartCoursesState, type HackstartCourse} from '@site/src/lib/courses';
+import CourseSidebarMenu from '@site/src/components/courses/CourseSidebarMenu';
 import styles from './courses.module.css';
 
 const fallbackCategory = '其他课程';
@@ -34,18 +35,16 @@ function categoryIcon(category: CategoryKey) {
 function CourseCard({course, index}: {course: HackstartCourse; index: number}): React.ReactNode {
   const courseGroup = courseCategoryKey(course);
   const Icon = categoryIcon(courseGroup === 'other' ? 'all' : courseGroup);
-  const isPublic = course.access_mode === 'public';
-  return <li className={styles.card}>
+  return <li><Link className={styles.card} to={courseIntroPath(course)}>
     <span className={styles.number}>{String(index + 1).padStart(2, '0')}</span>
     <span className={styles.icon}><Icon aria-hidden="true" /></span>
     <div className={styles.body}>
-      <small>{courseCategory(course)} · {isPublic ? '公开小册' : '会员课程'}</small>
+      <small>{courseCategory(course)} · 永久会员课程</small>
       <h2>{course.title}</h2>
       <p>{course.summary || '按章节循序学习，查看完整目录后再开始你的学习路径。'}</p>
     </div>
-    <span className={`${styles.access} ${isPublic ? styles.accessPublic : ''}`}>{isPublic ? '公开目录' : '会员课程'}</span>
-    <Link className={styles.action} to={courseIntroPath(course)}>查看小册<ArrowRight aria-hidden="true" /></Link>
-  </li>;
+    <span className={styles.action}>查看小册<ArrowRight aria-hidden="true" /></span>
+  </Link></li>;
 }
 
 export default function Home(): React.ReactNode {
@@ -56,17 +55,11 @@ export default function Home(): React.ReactNode {
     if (activeCategory === 'creation') return courses.filter((course) => ['creation', 'interaction'].includes(courseCategoryKey(course)));
     return courses.filter((course) => courseCategoryKey(course) === activeCategory);
   }, [activeCategory, courses]);
-  const counts = useMemo(() => bookCategoryGroups.map((group) => ({...group, count: courses.filter((course) => courseCategoryKey(course) === group.key).length})), [courses]);
-
-  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，从公开目录开始学习。">
+  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，永久会员可阅读完整章节。">
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
-          <p className={styles.sidebarLabel}>浏览小册</p>
-          <nav className={styles.sidebarNav}>
-            <button type="button" className={activeCategory === 'all' ? styles.sidebarActive : ''} onClick={() => setActiveCategory('all')}><BookOpen /><span><strong>全部小册</strong><small>{courses.length} 个系列</small></span></button>
-            {counts.map((group) => { const Icon = categoryIcon(group.key); return <button type="button" className={activeCategory === group.key ? styles.sidebarActive : ''} key={group.key} onClick={() => setActiveCategory(group.key)}><Icon /><span><strong>{group.label}</strong><small>{group.count} 个系列</small></span></button>; })}
-          </nav>
+          <CourseSidebarMenu courses={courses} />
           <div className={styles.sidebarNote}><span>LEARN BY DOING</span><p>每本小册都从目标、输入和交付结果出发。</p></div>
         </aside>
 
@@ -76,7 +69,7 @@ export default function Home(): React.ReactNode {
             <span className={styles.headerMark}>LEARN<br />BY<br />DOING</span>
           </header>
           <div className={styles.tabs} role="tablist" aria-label="系列课程分类">
-            <button type="button" className={activeCategory === 'all' ? styles.active : undefined} onClick={() => setActiveCategory('all')}><CodeXml />技术小册</button>
+            <button type="button" className={activeCategory === 'all' ? styles.active : undefined} onClick={() => setActiveCategory('all')}><BookOpen />技术小册</button>
             <button type="button" className={activeCategory === 'foundation' ? styles.active : undefined} onClick={() => setActiveCategory('foundation')}><Layers3 />入门基础</button>
             <button type="button" className={activeCategory === 'creation' || activeCategory === 'interaction' ? styles.active : undefined} onClick={() => setActiveCategory('creation')}><Wrench />创作与应用</button>
           </div>

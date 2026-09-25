@@ -101,20 +101,12 @@ function AccountControl() {
   </div>;
 }
 
-export default function WorkshopShell({children}: Props): ReactNode {
+export function WorkshopSidebar({embedded = false}: {embedded?: boolean}): ReactNode {
   const {pathname} = useLocation();
   const selected = useWorkshopSelection();
   const {items, status} = usePublicWorkshops();
 
-  return <div className={styles.workspace}>
-    <header className={styles.topbar}>
-      <Link to="/" className={styles.brand} aria-label="HackStart 首页"><img src="/img/hackstart.jpeg" alt="" /><span>HackStart<small>学习与实践</small></span></Link>
-      <nav className={styles.primaryNav} aria-label="主要导航">
-        {primaryLinks.map(({href, label, icon: Icon}) => <Link key={href} to={href} className={href === '/workshop/' ? styles.active : undefined} aria-current={href === '/workshop/' ? 'page' : undefined}><Icon aria-hidden="true" /><span>{label}</span></Link>)}
-      </nav>
-      <div className={styles.topbarAccount}><AccountControl /></div>
-    </header>
-    <aside className={styles.sidebar}>
+  return <aside className={`${styles.sidebar} ${embedded ? styles.embedded : ''}`}>
       <div className={styles.sidebarHeader}><p>WORKSHOP</p><strong>实践工坊</strong></div>
       <div className={styles.sidebarScroll}>
         <p className={styles.sidebarLabel}>Workshop 列表</p>
@@ -125,7 +117,19 @@ export default function WorkshopShell({children}: Props): ReactNode {
         </Link>)}
         {status === 'ready' && !items.length && <div className={styles.sidebarState}>暂无已发布 Workshop</div>}
       </div>
-    </aside>
+    </aside>;
+}
+
+export default function WorkshopShell({children}: Props): ReactNode {
+  return <div className={styles.workspace}>
+    <header className={styles.topbar}>
+      <Link to="/" className={styles.brand} aria-label="HackStart 首页"><img src="/img/hackstart.jpeg" alt="" /><span>HackStart<small>学习与实践</small></span></Link>
+      <nav className={styles.primaryNav} aria-label="主要导航">
+        {primaryLinks.map(({href, label, icon: Icon}) => <Link key={href} to={href} className={href === '/workshop/' ? styles.active : undefined} aria-current={href === '/workshop/' ? 'page' : undefined}><Icon aria-hidden="true" /><span>{label}</span></Link>)}
+      </nav>
+      <div className={styles.topbarAccount}><AccountControl /></div>
+    </header>
+    <WorkshopSidebar />
     <main className={styles.content}>{children}</main>
   </div>;
 }

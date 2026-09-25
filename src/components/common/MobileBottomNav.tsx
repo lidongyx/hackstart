@@ -8,6 +8,7 @@ import {
   BookOpenText,
   Cable,
   ClipboardCheck,
+  CodeXml,
   Crown,
   FileText,
   Home,
@@ -22,11 +23,12 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 
+import {categories} from '@site/src/lib/resources';
 import {courseIntroPath, useHackstartCourses} from '@site/src/lib/courses';
 import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 
-type MenuKey = 'home' | 'workshop' | 'docs' | 'community' | 'account';
+type MenuKey = 'home' | 'courses' | 'workshop' | 'resources' | 'account';
 
 type MenuItem = {
   readonly label: string;
@@ -100,13 +102,15 @@ function MobileBottomNavContent(): ReactNode {
     setOpenMenu(null);
   }, [pathname, search]);
 
-  const communityItems: MenuItem[] = [
-    {label: '技术交流', href: '/community/', icon: <MessagesSquare />},
-  ];
-  const docsItems: MenuItem[] = courses.map((course) => ({
+  const courseItems: MenuItem[] = courses.map((course) => ({
     label: course.title,
     href: courseIntroPath(course),
     icon: courseIcon(course.docs_path),
+  }));
+  const resourceItems: MenuItem[] = categories.map((category) => ({
+    label: category.label,
+    href: `/resources/?category=${category.id}`,
+    icon: category.id === 'modeling' ? <CodeXml /> : <Puzzle />,
   }));
   const workshopItems: MenuItem[] = [
     {label: 'Workshop 目录', href: '/workshop/', icon: <Wrench />},
@@ -115,11 +119,11 @@ function MobileBottomNavContent(): ReactNode {
   ];
 
   const activeMenu = (menu: MenuKey) => {
-    if (menu === 'home') return normalizedPath === '/';
+    if (menu === 'home') return normalizedPath === '/' || normalizedPath.startsWith('/membership');
+    if (menu === 'courses') return normalizedPath === '/book' || (normalizedPath.startsWith('/docs') && !normalizedPath.startsWith('/docs/workshops'));
     if (menu === 'workshop') return normalizedPath.startsWith('/workshop');
-    if (menu === 'docs') return normalizedPath.startsWith('/docs');
-    if (menu === 'community') return normalizedPath.startsWith('/community');
-    return normalizedPath.startsWith('/profile') || normalizedPath.startsWith('/account');
+    if (menu === 'resources') return normalizedPath.startsWith('/resources');
+    return normalizedPath.startsWith('/profile') || normalizedPath.startsWith('/account') || normalizedPath.startsWith('/community');
   };
 
   const homeItems: MenuItem[] = [
@@ -128,12 +132,12 @@ function MobileBottomNavContent(): ReactNode {
   ];
   const menuItems = openMenu === 'home'
     ? homeItems
-    : openMenu === 'workshop'
-      ? workshopItems
-      : openMenu === 'docs'
-        ? docsItems
-        : openMenu === 'community'
-          ? communityItems
+    : openMenu === 'courses'
+      ? courseItems
+      : openMenu === 'workshop'
+        ? workshopItems
+        : openMenu === 'resources'
+          ? resourceItems
           : [];
 
   const consoleHref = authReady && currentUser ? '/account/' : `/login/?redirect=${encodeURIComponent(typeof window === 'undefined' ? '/' : window.location.pathname + window.location.search)}`;
@@ -163,7 +167,7 @@ function MobileBottomNavContent(): ReactNode {
           id="hs-mobile-bottom-nav-menu"
           className={clsx('hs-mobile-bottom-nav__panel', openMenu === 'account' && 'hs-mobile-bottom-nav__panel--account')}
           role="dialog"
-          aria-label={openMenu === 'account' ? '我的菜单' : openMenu === 'home' ? '首页菜单' : openMenu === 'workshop' ? 'Workshop 菜单' : openMenu === 'community' ? '社区菜单' : '文档菜单'}>
+          aria-label={openMenu === 'account' ? '我的菜单' : openMenu === 'home' ? '首页菜单' : openMenu === 'courses' ? '系列课程菜单' : openMenu === 'workshop' ? 'Workshop 菜单' : '资源菜单'}>
           {openMenu === 'account' ? (
             <div className="hs-mobile-bottom-nav__account-menu">
               <div className="hs-mobile-bottom-nav__account-identity">
@@ -193,7 +197,7 @@ function MobileBottomNavContent(): ReactNode {
               </Link>
               {currentUser && (
                 <>
-              <Link className="hs-mobile-bottom-nav__menu-item" to="/account/" onClick={closeMenu}>
+                  <Link className="hs-mobile-bottom-nav__menu-item" to="/account/" onClick={closeMenu}>
                     <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true"><Crown /></span>
                     <span>会员中心</span>
                   </Link>
@@ -201,7 +205,11 @@ function MobileBottomNavContent(): ReactNode {
                     <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true"><UserRound /></span>
                     <span>个人资料</span>
                   </Link>
-              <Link className="hs-mobile-bottom-nav__menu-item" to="/community/mine/?tab=favorites" onClick={closeMenu}>
+                  <Link className="hs-mobile-bottom-nav__menu-item" to="/community/mine/" onClick={closeMenu}>
+                    <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true"><MessagesSquare /></span>
+                    <span>我的社区</span>
+                  </Link>
+                  <Link className="hs-mobile-bottom-nav__menu-item" to="/community/mine/?tab=favorites" onClick={closeMenu}>
                     <span className="hs-mobile-bottom-nav__menu-icon" aria-hidden="true"><Bookmark /></span>
                     <span>我的收藏</span>
                   </Link>
@@ -223,9 +231,9 @@ function MobileBottomNavContent(): ReactNode {
       <nav className="hs-mobile-bottom-nav" aria-label="移动端底部导航">
         {([
           {key: 'home' as const, label: '首页', icon: <Home aria-hidden="true" />},
+          {key: 'courses' as const, label: '课程', icon: <BookOpenText aria-hidden="true" />},
           {key: 'workshop' as const, label: '工坊', icon: <Wrench aria-hidden="true" />},
-          {key: 'docs' as const, label: '文档', icon: <BookOpenText aria-hidden="true" />},
-          {key: 'community' as const, label: '社区', icon: <MessagesSquare aria-hidden="true" />},
+          {key: 'resources' as const, label: '资源', icon: <CodeXml aria-hidden="true" />},
           {key: 'account' as const, label: '我的', icon: <UserRound aria-hidden="true" />},
         ]).map((item) => {
           const active = activeMenu(item.key);
