@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState, type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import {useLocation} from '@docusaurus/router';
-import {ChevronDown, CircleUserRound, LogIn, LogOut, UserRound, Wrench} from 'lucide-react';
+import {BookOpen, Boxes, ChevronDown, CircleUserRound, Crown, LogIn, LogOut, MessagesSquare, UserRound, Wrench} from 'lucide-react';
 
 import CommunityAvatar, {communityDisplayName} from '@site/src/components/community/CommunityAvatar';
 import {fetchCurrentSub2ApiUser, getStoredSub2ApiUser, subscribeToSub2ApiAuth, type Sub2ApiUser} from '@site/src/lib/sub2api-auth';
@@ -12,11 +12,11 @@ import styles from './workspace.module.css';
 type Props = {children: ReactNode};
 
 const primaryLinks = [
-  {href: '/', label: '学习路径'},
-  {href: '/workshop/', label: 'Workshop'},
-  {href: '/resources/?category=modeling', label: '资源'},
-  {href: '/community/', label: '社区'},
-  {href: '/membership/', label: '永久会员'},
+  {href: '/book/', label: '系列课程', icon: BookOpen},
+  {href: '/workshop/', label: 'Workshop', icon: Wrench},
+  {href: '/resources/?category=modeling', label: '资源导航', icon: Boxes},
+  {href: '/community/', label: '社区', icon: MessagesSquare},
+  {href: '/membership/', label: '永久会员', icon: Crown},
 ];
 
 function workshopHref(item: Workshop, pathname: string) {
@@ -108,9 +108,9 @@ export default function WorkshopShell({children}: Props): ReactNode {
 
   return <div className={styles.workspace}>
     <header className={styles.topbar}>
-      <Link to="/" className={styles.brand} aria-label="HackStart 首页"><img src="/img/hackstart.jpeg" alt="" /><span>HackStart</span></Link>
+      <Link to="/" className={styles.brand} aria-label="HackStart 首页"><img src="/img/hackstart.jpeg" alt="" /><span>HackStart<small>学习与实践</small></span></Link>
       <nav className={styles.primaryNav} aria-label="主要导航">
-        {primaryLinks.map((item) => <Link key={item.href} to={item.href} className={item.href === '/workshop/' ? styles.active : undefined}>{item.label}</Link>)}
+        {primaryLinks.map(({href, label, icon: Icon}) => <Link key={href} to={href} className={href === '/workshop/' ? styles.active : undefined} aria-current={href === '/workshop/' ? 'page' : undefined}><Icon aria-hidden="true" /><span>{label}</span></Link>)}
       </nav>
       <div className={styles.topbarAccount}><AccountControl /></div>
     </header>
