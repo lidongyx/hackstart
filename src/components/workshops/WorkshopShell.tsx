@@ -16,7 +16,7 @@ const primaryLinks = [
   {href: '/workshop/', label: 'Workshop'},
   {href: '/resources/?category=modeling', label: '资源'},
   {href: '/community/', label: '社区'},
-  {href: '/membership/', label: '年度会员'},
+  {href: '/membership/', label: '永久会员'},
 ];
 
 function workshopHref(item: Workshop, pathname: string) {

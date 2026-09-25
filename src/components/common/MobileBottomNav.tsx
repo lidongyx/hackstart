@@ -124,7 +124,7 @@ function MobileBottomNavContent(): ReactNode {
 
   const homeItems: MenuItem[] = [
     {label: '回到首页', href: '/', icon: <Home />},
-    {label: '年度会员', href: '/membership/', icon: <Crown />},
+    {label: '永久会员', href: '/membership/', icon: <Crown />},
   ];
   const menuItems = openMenu === 'home'
     ? homeItems
