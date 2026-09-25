@@ -25,9 +25,6 @@ export type HackstartCoursesState = {
 };
 
 export const defaultCourseAccessModes: Record<string, HackstartCourse['access_mode']> = {
-  integration: 'public',
-  usecase: 'public',
-  'plugin-skill-handbook': 'public',
   ...Object.fromEntries(bookCatalog.map((book) => [book.code, book.accessMode])),
 };
 

@@ -70,12 +70,12 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
       <span>
         {state === 'loading' && '请稍候。'}
         {state === 'anonymous' && '登录 HackStart 后即可确认会员状态，继续阅读本篇内容。'}
-        {state === 'locked' && '加入 HackStart 年度会员后，即可阅读会员系列中的全部文章。'}
+        {state === 'locked' && '加入 HackStart 永久会员后，即可阅读会员系列中的全部文章。'}
         {state === 'error' && courseStatus === 'ready' && !course && '该课程已下架或尚未在课程管理中启用。'}
         {state === 'error' && !(courseStatus === 'ready' && !course) && '课程权限服务暂时不可用，请稍后刷新页面。'}
       </span>
       {state === 'anonymous' && <Link to={loginURL}>登录后继续</Link>}
-      {state === 'locked' && <Link to="/membership/">了解年度会员</Link>}
+      {state === 'locked' && <Link to="/membership/">了解永久会员</Link>}
       {state === 'error' && !(courseStatus === 'ready' && !course) && <button type="button" onClick={() => globalThis.location?.reload()}>重新加载</button>}
     </section>
   );

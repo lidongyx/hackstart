@@ -115,14 +115,14 @@ export default function MembershipPage(): ReactNode {
   }, [pendingOrder, refreshing]);
 
   return (
-    <Layout title="HackStart 年度会员" description="加入 HackStart 年度会员，阅读完整的 Codex 学习内容。">
+    <Layout title="HackStart 永久会员" description="加入 HackStart 永久会员，永久阅读完整的 Codex 学习内容。">
       <div className={styles.shell}>
         <ResourceSidebar membershipMode />
         <main className={styles.page}>
           <section className={styles.hero}>
             <div className={styles.heroCopy}>
               <p className={styles.kicker}>HACKSTART 会员系列</p>
-              <Heading as="h1">一年的时间，把 Codex 学明白</Heading>
+              <Heading as="h1">一次加入，把 Codex 学明白</Heading>
               <p className={styles.lead}>从零开始的课程、真实案例和可复用的工具方法，持续更新，适合边做边学。</p>
               <div className={styles.heroPoints}>
                 <span><BookOpenText />完整课程与文章</span>
@@ -130,9 +130,9 @@ export default function MembershipPage(): ReactNode {
               </div>
             </div>
             <aside className={styles.priceCard}>
-              <div className={styles.priceCardTop}><Crown /><span>年度会员</span></div>
-              <div className={styles.price}>¥{(priceCents / 100).toFixed(0)}<small> / 年</small></div>
-              <p>开通后一年内可阅读系列课程的全部内容，课程与文章统一按会员权限开放。</p>
+              <div className={styles.priceCardTop}><Crown /><span>永久会员</span></div>
+              <div className={styles.price}>¥{(priceCents / 100).toFixed(0)}<small> / 永久</small></div>
+              <p>开通后永久可阅读系列课程的全部内容，课程与文章统一按会员权限开放。</p>
               <strong>内容越丰富，价格会持续上涨</strong>
             </aside>
           </section>
@@ -145,7 +145,7 @@ export default function MembershipPage(): ReactNode {
             <div className={styles.valueList}>
               <div><BookOpenText /><span><strong>CodexStart 零基础课程</strong><small>从第一次使用到完整工作流，按步骤建立实践能力。</small></span></div>
               <div><Sparkles /><span><strong>持续更新的实践内容</strong><small>新增案例、插件与技能方法，会不断补充到会员系列。</small></span></div>
-              <div><Crown /><span><strong>一年内反复阅读</strong><small>一次开通，当前内容和会员期内新增内容都可以阅读。</small></span></div>
+              <div><Crown /><span><strong>永久反复阅读</strong><small>一次开通，当前内容和后续新增内容都可以阅读。</small></span></div>
             </div>
           </section>
 
@@ -158,17 +158,17 @@ export default function MembershipPage(): ReactNode {
                   <p className={styles.eyebrow}>你的账户</p>
                   <Heading as="h2">{session.nickname || session.email || 'HackStart 用户'}</Heading>
                   <p>{session.email}</p>
-                  <div className={styles.statusRow}><span>会员状态</span><strong className={data.membership.active ? styles.active : styles.muted}>{data.membership.active ? '年度会员有效' : data.membership.member ? '会员已到期' : '尚未开通'}</strong></div>
+                  <div className={styles.statusRow}><span>会员状态</span><strong className={data.membership.active ? styles.active : styles.muted}>{data.membership.active ? '永久会员有效' : data.membership.member ? '会员已到期' : '尚未开通'}</strong></div>
                   <div className={styles.statusRow}><span>有效期至</span><strong>{formatDate(data.membership.expires_at)}</strong></div>
                   <div className={styles.statusRow}><span>已购买</span><strong>{data.membership.purchase_count} 次</strong></div>
                 </article>
                 <article className={`${styles.panel} ${styles.offer}`}>
                   <p className={styles.eyebrow}>加入会员</p>
-                  <Heading as="h2">HackStart 年度会员</Heading>
-                  <p className={styles.offerLead}>每次购买增加一年有效期。提前续费会从当前到期日继续顺延。</p>
-                  <div className={styles.offerPrice}>¥{(data.product.amount_cents / 100).toFixed(0)}<small> / 年</small></div>
+                  <Heading as="h2">HackStart 永久会员</Heading>
+                  <p className={styles.offerLead}>一次开通，永久阅读会员课程、文章和后续新增内容。</p>
+                  <div className={styles.offerPrice}>¥{(data.product.amount_cents / 100).toFixed(0)}<small> / 永久</small></div>
                   {data.membership.active && <div className={styles.success}><Check />当前有效至 {formatDate(data.membership.expires_at)}</div>}
-                  <button className={styles.primary} disabled={!canBuy || submitting} onClick={createOrder}>{submitting ? <LoaderCircle className={styles.spin} /> : <Clock3 />}{submitting ? '正在创建订单' : data.provider_enabled ? data.membership.active ? '续费一年' : '开通年度会员' : '支付暂未开放'}</button>
+                  <button className={styles.primary} disabled={!canBuy || submitting} onClick={createOrder}>{submitting ? <LoaderCircle className={styles.spin} /> : <Clock3 />}{submitting ? '正在创建订单' : data.provider_enabled ? data.membership.active ? '继续购买' : '开通永久会员' : '支付暂未开放'}</button>
                   <small className={styles.hint}>会员费用只用于课程阅读，不会增加或扣减 API 余额。</small>
                 </article>
               </section>
