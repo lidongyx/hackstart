@@ -41,11 +41,11 @@ async (page) => {
     else if (path === '/api/hackstart/courses') body = {items: courses};
     else if (path.startsWith('/api/hackstart/course-access/')) body = {allowed: member, reason: member ? '' : 'membership_required'};
     else if (path === '/api/hackstart/membership/orders') {
-      orders = [{id: 1, trade_order_id: 'MOCK-ONLY', title: '年度会员', amount_cents: 6800, status: 'pending', provider: 'mock', url_qrcode: `${base}/img/hackstart.jpeg`, created_at: '2026-09-17T00:00:00Z'}];
+      orders = [{id: 1, trade_order_id: 'MOCK-ONLY', title: '永久会员', amount_cents: 6800, status: 'pending', provider: 'mock', url_qrcode: `${base}/img/hackstart.jpeg`, created_at: '2026-09-17T00:00:00Z'}];
       body = {order: orders[0], url_qrcode: orders[0].url_qrcode};
     } else if (path === '/api/hackstart/membership') {
       if (orders.length && ++polling >= 3) {member = true; orders[0].status = 'paid';}
-      body = {product: {code: 'annual', title: '年度会员', amount_cents: 6800, duration_days: 365}, membership: {active: member, member, purchase_count: member ? 1 : 0, started_at: null, expires_at: member ? '2027-09-17T00:00:00Z' : null}, orders, provider_enabled: true};
+      body = {product: {code: 'annual', title: '永久会员', amount_cents: 6800, duration_days: 365}, membership: {active: member, member, purchase_count: member ? 1 : 0, started_at: null, expires_at: member ? '2027-09-17T00:00:00Z' : null}, orders, provider_enabled: true};
     } else if (path === '/api/resources') body = {items: query.includes('search=不存在') ? [] : [resource], total: 1, page: 1, pages: 1};
     else if (path === '/api/resources/7') body = resource;
     else if (path === '/api/hackstart/skills') body = {items: [skill], categories: [{category_key: 'coding', category_name: '编程', count: 1}], total: 1, page: 1, pages: 1};
@@ -83,8 +83,8 @@ async (page) => {
   assert(redirect === '/docs/codexstart/intro/', 'Login return points at the current site'); checks.push('匿名会员门禁/深链接回跳');
   await visit('/account/#auth_token=mock-token&refresh_token=mock-refresh&expires_in=3600'); await visible('尚未开通会员');
   assert(!page.url().includes('auth_token'), 'Fragment token remains');
-  await visit(chapter); await visible('加入 HackStart 年度会员后'); checks.push('非会员门禁');
-  await visit('/membership/'); await page.getByRole('button', {name: '开通年度会员'}).click(); await visible('扫码加入会员');
+  await visit(chapter); await visible('加入 HackStart 永久会员后'); checks.push('非会员门禁');
+  await visit('/membership/'); await page.getByRole('button', {name: '开通永久会员'}).click(); await visible('扫码加入会员');
   await page.getByRole('button', {name: '刷新支付状态'}).click(); await visible('会员已生效'); checks.push('模拟订单/二维码/支付生效');
   await visit(chapter); await page.locator('article').first().waitFor();
   assert(await page.getByText('本课程仅限会员阅读', {exact: true}).count() === 0, 'Member still locked'); checks.push('有效会员阅读');

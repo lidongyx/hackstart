@@ -137,7 +137,7 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         {section === 'membership' && <>
           <p className={styles.label}>账户与会员</p>
           <nav aria-label="账户与会员" className={styles.nav}>
-            <Link className={clsx(styles.item, pathname.startsWith('/membership') && styles.active)} to="/membership/"><span className={styles.icon}><Crown /></span><span className={styles.copy}><strong>年度会员服务</strong><small>开通并管理会员权益</small></span></Link>
+            <Link className={clsx(styles.item, pathname.startsWith('/membership') && styles.active)} to="/membership/"><span className={styles.icon}><Crown /></span><span className={styles.copy}><strong>永久会员服务</strong><small>开通并管理会员权益</small></span></Link>
             <Link className={clsx(styles.item, pathname.startsWith('/account') && styles.active)} to="/account/"><span className={styles.icon}><Crown /></span><span className={styles.copy}><strong>会员中心</strong><small>查看课程与有效期</small></span></Link>
             <Link className={clsx(styles.item, pathname.startsWith('/profile') && styles.active)} to="/profile/"><span className={styles.icon}><UserRound /></span><span className={styles.copy}><strong>个人资料</strong><small>管理昵称、头像与资料</small></span></Link>
           </nav>

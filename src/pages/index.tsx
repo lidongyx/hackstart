@@ -39,7 +39,7 @@ function CourseCard({course, index}: {course: HackstartCourse; index: number}): 
     <span className={styles.number}>{String(index + 1).padStart(2, '0')}</span>
     <span className={styles.icon}><Icon aria-hidden="true" /></span>
     <div className={styles.body}>
-      <small>{courseCategory(course)} · 年度会员课程</small>
+      <small>{courseCategory(course)} · 永久会员课程</small>
       <h2>{course.title}</h2>
       <p>{course.summary || '按章节循序学习，查看完整目录后再开始你的学习路径。'}</p>
     </div>
@@ -55,7 +55,7 @@ export default function Home(): React.ReactNode {
     if (activeCategory === 'creation') return courses.filter((course) => ['creation', 'interaction'].includes(courseCategoryKey(course)));
     return courses.filter((course) => courseCategoryKey(course) === activeCategory);
   }, [activeCategory, courses]);
-  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，年度会员可阅读完整章节。">
+  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，永久会员可阅读完整章节。">
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
