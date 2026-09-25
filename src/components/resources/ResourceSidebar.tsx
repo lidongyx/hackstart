@@ -105,14 +105,6 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
         : pathname.startsWith('/community')
           ? 'community'
           : 'resources';
-  const sectionMeta = {
-    resources: {label: '资源导航', subtitle: 'RESOURCE LIBRARY'},
-    courses: {label: '系列小册', subtitle: 'BOOK LIBRARY'},
-    workshop: {label: 'Workshop', subtitle: 'PRACTICE LAB'},
-    community: {label: '社区', subtitle: 'COMMUNITY'},
-    membership: {label: '永久会员', subtitle: 'MEMBERSHIP'},
-  }[section];
-
   const iconForCourse = (docsPath: string) => {
     if (docsPath === 'integration') return <Cable />;
     if (docsPath === 'usecase') return <Boxes />;
@@ -122,14 +114,6 @@ export default function ResourceSidebar({activeCategory, onCategorySelect, embed
 
   return (
     <aside className={clsx(styles.sidebar, embedded && styles.embedded)}>
-      <Link className={styles.brand} to="/" aria-label="HackStart 首页">
-        <img src="/img/hackstart.jpeg" alt="" />
-        <span>
-          HackStart
-          <small>{sectionMeta.subtitle}</small>
-        </span>
-      </Link>
-
       <div ref={scrollRef} className={styles.scroll}>
         {section === 'resources' && <>
           <p className={styles.label}>浏览资源</p>

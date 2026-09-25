@@ -62,7 +62,6 @@ export default function Home(): React.ReactNode {
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
-          <div className={styles.sidebarBrand}><span className={styles.sidebarLogo}><CodeXml /></span><div><strong>HackStart</strong><small>BOOK LIBRARY</small></div></div>
           <p className={styles.sidebarLabel}>浏览小册</p>
           <nav className={styles.sidebarNav}>
             <button type="button" className={activeCategory === 'all' ? styles.sidebarActive : ''} onClick={() => setActiveCategory('all')}><BookOpen /><span><strong>全部小册</strong><small>{courses.length} 个系列</small></span></button>
