@@ -6,19 +6,11 @@ const publicCourseCodes = new Set([
   'integration',
   'usecase',
   'plugin-skill-handbook',
-  'codex-knowledge-base',
-  'codex-office',
-  'codex-video-editing',
-  'codex-image-generation',
-  'codex-video-production',
-  'codex-3d-modeling',
-  'codex-game-development',
 ]);
 
 function secureMemberDocRemarkPlugin() {
   return (tree: {children: Array<Record<string, unknown>>}, file: {path?: string; data?: {frontMatter?: {hide_title?: boolean}}}) => {
     const sourcePath = file.path || '';
-    if (file.data?.frontMatter?.hide_title) return;
     if (sourcePath.endsWith(path.join('docs', 'index.mdx'))) return;
     const docsMarker = `${path.sep}docs${path.sep}`;
     const markerIndex = sourcePath.lastIndexOf(docsMarker);
@@ -27,9 +19,8 @@ function secureMemberDocRemarkPlugin() {
     const parts = relative.split(path.sep);
     if (parts.length < 2) return;
     const courseCode = parts[0];
-    // Workshop content is a separate, locally rendered practice library. It
-    // must not be rewritten into the remote member-course content flow.
-    if (publicCourseCodes.has(courseCode) || courseCode === 'workshops') return;
+    if (publicCourseCodes.has(courseCode)) return;
+    if (courseCode === 'workshops' && parts.length === 2) return;
 
     const requestPath = parts.slice(1).join('/');
     if (requestPath === 'intro.md' || requestPath === 'intro.mdx' || requestPath === 'info.md' || requestPath === 'info.mdx') {
@@ -90,13 +81,13 @@ const defaultCourseAccessModes: Record<string, CourseManifestRow['access_mode']>
   usecase: 'public',
   'plugin-skill-handbook': 'public',
   codexstart: 'member',
-  'codex-knowledge-base': 'public',
-  'codex-office': 'public',
-  'codex-video-editing': 'public',
-  'codex-image-generation': 'public',
-  'codex-video-production': 'public',
-  'codex-3d-modeling': 'public',
-  'codex-game-development': 'public',
+  'codex-knowledge-base': 'member',
+  'codex-office': 'member',
+  'codex-video-editing': 'member',
+  'codex-image-generation': 'member',
+  'codex-video-production': 'member',
+  'codex-3d-modeling': 'member',
+  'codex-game-development': 'member',
 };
 
 async function readCategory(siteDir: string, docsPath: string, category?: string) {

@@ -8,7 +8,7 @@ import {fetchCurrentSub2ApiUser, sub2ApiFetch} from '@site/src/lib/sub2api-auth'
 import styles from './CourseAccessGate.module.css';
 
 type AccessResponse = {
-  allowed?: boolean;
+  membership?: {active?: boolean};
   reason?: string;
 };
 
@@ -22,23 +22,16 @@ type Props = {
 
 export default function CourseAccessGate({course, courseStatus = 'ready', children}: Props): ReactNode {
   const {siteConfig} = useDocusaurusContext();
-  const accessApiBaseURL = String(siteConfig.customFields?.courseAccessApiBaseUrl || '');
+  const accessApiBaseURL = String(siteConfig.customFields?.membershipApiUrl || '');
   const [state, setState] = useState<State>('loading');
 
   useEffect(() => {
-    if (courseStatus === 'loading') {
-      setState('loading');
-      return;
-    }
-    if (courseStatus === 'error' || !course) {
-      setState('error');
-      return;
-    }
     if (!accessApiBaseURL) {
       setState('error');
       return;
     }
 
+    setState('loading');
     const controller = new AbortController();
     fetchCurrentSub2ApiUser(controller.signal)
       .then(async (user) => {
@@ -46,11 +39,11 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
           setState('anonymous');
           return;
         }
-        const accessURL = `${accessApiBaseURL.replace(/\/$/, '')}/${encodeURIComponent(course.code)}`;
+        const accessURL = accessApiBaseURL;
         const accessResponse = await sub2ApiFetch(accessURL, {signal: controller.signal, headers: {Accept: 'application/json'}});
         if (!accessResponse.ok) throw new Error('access api failed');
         const access = await accessResponse.json() as AccessResponse;
-        setState(access.allowed ? 'allowed' : 'locked');
+        setState(access.membership?.active ? 'allowed' : 'locked');
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === 'AbortError')) setState('error');
@@ -66,7 +59,7 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
     <section className={styles.gate}>
       {state === 'loading' ? <LoaderCircle className={styles.spinner} /> : <LockKeyhole />}
       <p>{state === 'loading' ? 'CHECKING ACCESS' : 'MEMBERSHIP REQUIRED'}</p>
-      <h1>{state === 'loading' ? '正在确认课程权限' : state === 'error' && courseStatus === 'ready' && !course ? '本课程暂未上架' : state === 'error' ? '暂时无法确认阅读权限' : '本课程仅限会员阅读'}</h1>
+      <h1>{state === 'loading' ? '正在确认课程权限' : state === 'error' && courseStatus === 'ready' && !course ? '本课程暂未上架' : state === 'error' ? '暂时无法确认阅读权限' : '本内容仅限年度会员阅读'}</h1>
       <span>
         {state === 'loading' && '请稍候。'}
         {state === 'anonymous' && '登录 HackStart 后即可确认会员状态，继续阅读本篇内容。'}

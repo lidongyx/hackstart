@@ -6,16 +6,12 @@ import {useThemeConfig} from '@docusaurus/theme-common';
 import CollapseButton from '@theme/DocSidebar/Desktop/CollapseButton';
 import Content from '@theme/DocSidebar/Desktop/Content';
 import type {Props} from '@theme/DocSidebar/Desktop';
-import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
-import {getDocLibrarySection} from '@site/src/lib/docLibrary';
+import {WorkshopSidebar} from '@site/src/components/workshops/WorkshopShell';
 
 export default function DocSidebarDesktop({path, sidebar, onCollapse, isHidden}: Props): ReactNode {
-  if (getDocLibrarySection(path)) {
-    return <ResourceSidebar embedded />;
-  }
-
   const {docs: {sidebar: {hideable}}} = useThemeConfig();
   const {colorMode, setColorMode} = useColorMode();
+  if (path.startsWith('/docs/workshops/')) return <WorkshopSidebar embedded />;
   const nextColorMode = colorMode === 'dark' ? 'light' : 'dark';
 
   return (

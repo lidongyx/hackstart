@@ -30,7 +30,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '入门与基础',
     categoryKey: 'foundation',
     position: 2,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-office',
@@ -40,7 +40,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '入门与基础',
     categoryKey: 'foundation',
     position: 3,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-video-editing',
@@ -50,7 +50,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '内容创作',
     categoryKey: 'creation',
     position: 4,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-image-generation',
@@ -60,7 +60,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '内容创作',
     categoryKey: 'creation',
     position: 5,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-video-production',
@@ -70,7 +70,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '内容创作',
     categoryKey: 'creation',
     position: 6,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-3d-modeling',
@@ -80,7 +80,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '空间与互动',
     categoryKey: 'interaction',
     position: 7,
-    accessMode: 'public',
+    accessMode: 'member',
   },
   {
     code: 'codex-game-development',
@@ -90,7 +90,7 @@ export const bookCatalog: readonly BookDefinition[] = [
     category: '空间与互动',
     categoryKey: 'interaction',
     position: 8,
-    accessMode: 'public',
+    accessMode: 'member',
   },
 ];
 

@@ -35,18 +35,16 @@ function categoryIcon(category: CategoryKey) {
 function CourseCard({course, index}: {course: HackstartCourse; index: number}): React.ReactNode {
   const courseGroup = courseCategoryKey(course);
   const Icon = categoryIcon(courseGroup === 'other' ? 'all' : courseGroup);
-  const isPublic = course.access_mode === 'public';
-  return <li className={styles.card}>
+  return <li><Link className={styles.card} to={courseIntroPath(course)}>
     <span className={styles.number}>{String(index + 1).padStart(2, '0')}</span>
     <span className={styles.icon}><Icon aria-hidden="true" /></span>
     <div className={styles.body}>
-      <small>{courseCategory(course)} · {isPublic ? '公开小册' : '会员课程'}</small>
+      <small>{courseCategory(course)} · 年度会员课程</small>
       <h2>{course.title}</h2>
       <p>{course.summary || '按章节循序学习，查看完整目录后再开始你的学习路径。'}</p>
     </div>
-    <span className={`${styles.access} ${isPublic ? styles.accessPublic : ''}`}>{isPublic ? '公开目录' : '会员课程'}</span>
-    <Link className={styles.action} to={courseIntroPath(course)}>查看小册<ArrowRight aria-hidden="true" /></Link>
-  </li>;
+    <span className={styles.action}>查看小册<ArrowRight aria-hidden="true" /></span>
+  </Link></li>;
 }
 
 export default function Home(): React.ReactNode {
@@ -57,7 +55,7 @@ export default function Home(): React.ReactNode {
     if (activeCategory === 'creation') return courses.filter((course) => ['creation', 'interaction'].includes(courseCategoryKey(course)));
     return courses.filter((course) => courseCategoryKey(course) === activeCategory);
   }, [activeCategory, courses]);
-  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，从公开目录开始学习。">
+  return <Layout title="HackStart 系列课程" description="浏览 HackStart 系列课程与小册目录，年度会员可阅读完整章节。">
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">

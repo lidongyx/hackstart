@@ -38,6 +38,10 @@ export default function DocItemLayout({children}: Props): ReactNode {
   const {courses, status: courseStatus} = useHackstartCoursesState();
   const course = section ? courses.find((item) => item.docs_path === section) : undefined;
 
+  if (metadata.id.startsWith('workshops/') && metadata.id !== 'workshops/intro') {
+    return <CourseAccessGate key={metadata.id}><article className={styles.libraryArticle}><DocItemContent>{children}</DocItemContent></article></CourseAccessGate>;
+  }
+
   if (section) {
     const config = docLibrarySections[section] || {label: course?.title || section, introPath: `/docs/${section}/intro/`};
     const article = isDocLibraryIntro(metadata.id) ? (
@@ -63,8 +67,8 @@ export default function DocItemLayout({children}: Props): ReactNode {
     );
     // The intro is the public catalogue for a course. Keep its chapter list
     // readable before membership; only individual chapters require access.
-    const isPublicCourse = course?.access_mode === 'public';
-    return <div className={styles.libraryDetail}>{isDocLibraryIntro(metadata.id) || isPublicCourse ? article : <CourseAccessGate course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
+    const isPublicCourse = ['integration', 'usecase', 'plugin-skill-handbook'].includes(section);
+    return <div className={styles.libraryDetail}>{isDocLibraryIntro(metadata.id) || isPublicCourse ? article : <CourseAccessGate key={metadata.id} course={course} courseStatus={courseStatus}>{article}</CourseAccessGate>}</div>;
   }
 
   return (

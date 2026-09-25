@@ -1,5 +1,5 @@
 import {sub2ApiFetch, getSub2ApiToken, clearSub2ApiAuth} from './sub2api-auth';
-import type {Course, MembershipResponse, User} from './types';
+import type {Course, LearningHistoryItem, MembershipResponse, User} from './types';
 
 let hackadminBase = 'https://hackadmin.hackweek.org';
 let sub2ApiBase = 'https://hackstart.org/api/v1';
@@ -45,6 +45,14 @@ export function getMembership(): Promise<MembershipResponse> {
 
 export function getCourses(): Promise<{items: Course[]}> {
   return request<{items: Course[]}>(hackadminBase, '/api/hackstart/courses');
+}
+
+export function getLearningHistory(): Promise<{items: LearningHistoryItem[]}> {
+  return request<{items: LearningHistoryItem[]}>(hackadminBase, '/api/hackstart/learning-history');
+}
+
+export function recordLearningProgress(payload: {path: string; title?: string; course?: string}): Promise<void> {
+  return request<void>(hackadminBase, '/api/hackstart/learning-progress', {method: 'POST', body: JSON.stringify(payload)});
 }
 
 export function updateHackadminProfile(payload: Pick<User, 'nickname' | 'city' | 'github_username' | 'website_url'>): Promise<User> {

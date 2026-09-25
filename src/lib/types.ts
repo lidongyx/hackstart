@@ -35,3 +35,9 @@ export type MembershipResponse = {
   provider_enabled: boolean;
   price_cents: number;
 };
+
+export type LearningHistoryItem = {
+  path: string;
+  title: string;
+  visited_at: string;
+};

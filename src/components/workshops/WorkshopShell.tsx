@@ -18,13 +18,12 @@ function activeWorkshop(item: Workshop, pathname: string, selected: string) {
   return pathname.startsWith(`/docs/workshops/${item.code}`);
 }
 
-export default function WorkshopShell({children}: Props): ReactNode {
+export function WorkshopSidebar({embedded = false}: {embedded?: boolean}): ReactNode {
   const {pathname} = useLocation();
   const selected = useWorkshopSelection();
   const {items, status} = usePublicWorkshops();
 
-  return <div className={styles.workspace}>
-    <aside className={styles.sidebar}>
+  return <aside className={`${styles.sidebar} ${embedded ? styles.embedded : ""}`}>
       <div className={styles.sidebarHeader}><p>WORKSHOP</p><strong>实践工坊</strong></div>
       <div className={styles.sidebarScroll}>
         <p className={styles.sidebarLabel}>Workshop 列表</p>
@@ -35,7 +34,12 @@ export default function WorkshopShell({children}: Props): ReactNode {
         </Link>)}
         {status === 'ready' && !items.length && <div className={styles.sidebarState}>暂无已发布 Workshop</div>}
       </div>
-    </aside>
+    </aside>;
+}
+
+export default function WorkshopShell({children}: Props): ReactNode {
+  return <div className={styles.workspace}>
+    <WorkshopSidebar />
     <main className={styles.content}>{children}</main>
   </div>;
 }
