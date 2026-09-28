@@ -65,14 +65,14 @@ export function courseIntroPath(course: HackstartCourse) {
   return bookEntryPath({docsPath: course.docs_path.replace(/^\/+|\/+$/g, '')});
 }
 
-export function useHackstartCoursesState(): HackstartCoursesState {
+export function useHackstartCoursesState(enabled = true): HackstartCoursesState {
   const {siteConfig} = useDocusaurusContext();
   const apiURL = String(siteConfig.customFields?.coursesApiUrl || '');
   const [remoteCourses, setRemoteCourses] = useState<HackstartCourse[] | null>(null);
-  const [status, setStatus] = useState<HackstartCoursesState['status']>(apiURL ? 'loading' : 'ready');
+  const [status, setStatus] = useState<HackstartCoursesState['status']>(enabled && apiURL ? 'loading' : 'ready');
 
   useEffect(() => {
-    if (!apiURL) {
+    if (!enabled || !apiURL) {
       setRemoteCourses([...fallbackCourses]);
       setStatus('ready');
       return;
@@ -92,7 +92,7 @@ export function useHackstartCoursesState(): HackstartCoursesState {
         }
       });
     return () => controller.abort();
-  }, [apiURL]);
+  }, [apiURL, enabled]);
 
   return useMemo(() => ({
     courses: remoteCourses ?? [...fallbackCourses],

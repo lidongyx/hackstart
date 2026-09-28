@@ -58,6 +58,12 @@ export default function NavbarMobilePrimaryMenu(): ReactNode {
       <ul className="menu__list hs-mobile-docs-menu">
         {courseItems.map((item) => <MobileMenuLink key={item.href} item={item} />)}
       </ul>
+      <div className="hs-mobile-docs-title">API教程</div>
+      <ul className="menu__list hs-mobile-docs-menu">
+        <MobileMenuLink item={{label: 'API 接入教程', href: '/docs/integration/intro/'}} />
+        <MobileMenuLink item={{label: 'Codex 使用案例', href: '/docs/usecase/intro/'}} />
+        <MobileMenuLink item={{label: '插件与技能手册', href: '/docs/plugin-skill-handbook/intro/'}} />
+      </ul>
       <div className="hs-mobile-docs-footer">
         <button type="button" className="hs-mobile-docs-theme-toggle" onClick={() => setColorMode(nextColorMode)}>
           <span aria-hidden="true">{colorMode === 'dark' ? '☼' : '◐'}</span>

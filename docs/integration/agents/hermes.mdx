@@ -1,0 +1,196 @@
+---
+sidebar_position: 2
+---
+
+# Hermes 接入 HackStart
+
+Hermes 在 HackStart 体系里通常按 Chat Completions / OpenAI Compatible 方式接入，适合本地 Agent、桌面助手或需要 OpenAI 兼容接口的高级工作流。
+
+和 Codex 不同，Hermes Chat Completions 配置通常使用：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+## Hermes 适合什么
+
+| 场景 | 说明 |
+| --- | --- |
+| 本地 Agent | 让模型参与本机任务流程 |
+| Chat Completions 工作流 | 使用 OpenAI 兼容接口 |
+| CC Switch 管理 | 可以从 HackStart 控制台导入 Hermes 配置 |
+| 进阶自动化 | 适合已经理解 API Key、Base URL 和模型的人 |
+
+如果你只想普通聊天，Cherry Studio 更简单。如果你主要写代码，Codex 桌面端和 Codex CLI 更直接。
+
+## 下载与安装
+
+Hermes Agent 的官方入口：
+
+- 官方文档：[https://hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com)
+- GitHub 仓库：[NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)
+
+macOS、Linux、WSL2 通常使用官方安装脚本：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+source ~/.bashrc
+hermes
+```
+
+如果你使用 zsh，安装后可以运行：
+
+```bash
+source ~/.zshrc
+hermes
+```
+
+Windows 原生 PowerShell 安装方式：
+
+```powershell
+iex (irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1)
+```
+
+官方也提示 Windows 原生支持仍可能有边角问题。新人如果遇到奇怪的 shell、路径或终端问题，优先使用 WSL2 路径安装。
+
+安装后常用检查命令：
+
+```bash
+hermes
+hermes model
+hermes tools
+hermes doctor
+```
+
+## 通过 CC Switch 导入 Hermes
+
+HackStart 控制台的 API Key 页面支持导入到 CC Switch。对于 OpenAI 分组，可能会看到 Hermes Agent 选项。
+
+操作步骤：
+
+1. 安装并打开 CC Switch。
+2. 登录 [HackStart 控制台](https://hackstart.org/login)。
+3. 进入 API Key 页面。
+4. 找到用于 Hermes 的 Key。
+5. 点击“导入到 CC Switch”。
+6. 如果弹出客户端选择，选择 `Hermes Agent`。
+7. 允许浏览器打开 CC Switch。
+8. 在 CC Switch 中确认导入。
+9. 确认 endpoint 是 HackStart 的 OpenAI Compatible 地址。
+
+通常 Hermes Chat Completions 应使用：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+如果导入后看到的是根地址，先确认 Hermes 当前模式是否自动拼接 `/v1`。不要让最终请求变成 `/v1/v1`。
+
+## 手动配置
+
+不同 Hermes 版本的字段名可能不同。核心值如下：
+
+```text
+Provider Name: HackStart
+API Key: sk-...
+Base URL: https://ip2.hackstart.org/v1
+Model: gpt-5.5
+Protocol: OpenAI Compatible / Chat Completions
+```
+
+如果配置文件是 JSON，概念上类似：
+
+```json
+{
+  "provider": "hackstart",
+  "apiKey": "sk-...",
+  "baseUrl": "https://ip2.hackstart.org/v1",
+  "model": "gpt-5.5"
+}
+```
+
+以 Hermes 当前文档和界面字段为准。不要为了适配示例去改软件源码。
+
+## macOS 注意事项
+
+1. 下载时确认 Apple Silicon / Intel。
+2. 第一次打开如被系统拦截，到 系统设置 -> 隐私与安全性 允许。
+3. 如果 Hermes 需要读取本机目录，只授权测试项目。
+4. 配置文件不要放到项目仓库里。
+
+## Windows 注意事项
+
+1. 优先使用官方安装器。
+2. ZIP 便携版解压到固定目录。
+3. 如果要配合 CC Switch，允许注册协议处理程序。
+4. 防火墙提示联网时，确认程序来源再允许。
+
+## 第一次测试
+
+输入：
+
+```text
+请用一句话说明 Hermes 已经通过 HackStart API 正常工作。
+```
+
+成功标准：
+
+1. Hermes 能返回结果。
+2. HackStart 控制台出现请求记录。
+3. 当前 Key 的用量增加合理。
+4. 没有 401、403、model not found。
+
+## Agent 任务建议
+
+Hermes 这类工具可能会执行多轮任务。建议在提示词里写清边界：
+
+```text
+请先只分析，不要修改文件，不要运行命令。
+```
+
+```text
+如果需要执行命令，先告诉我命令和目的，等我确认。
+```
+
+```text
+最多尝试 3 次。失败后总结原因，不要无限重试。
+```
+
+```text
+不要提交 git，不要部署，不要删除文件。
+```
+
+## 常见错误
+
+### 连接失败
+
+先检查 Base URL：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+再检查软件是否自动拼接 `/v1`。如果最终请求变成 `/v1/v1`，把配置里的 `/v1` 去掉。
+
+### 401
+
+API Key 错误、复制不完整或 Key 已删除。重新创建一个 Hermes 专用 Key。
+
+### 403
+
+分组、额度、IP 限制或模型权限问题。回到 HackStart 控制台检查。
+
+### 模型不支持工具调用
+
+换一个 HackStart 控制台显示支持 Agent / 工具调用场景的模型，或关闭工具调用相关功能先测试普通聊天。
+
+## 和 Codex 的区别
+
+| 项目 | Hermes | Codex |
+| --- | --- | --- |
+| 常见协议 | OpenAI Compatible / Chat Completions | Responses Provider |
+| 常见 Base URL | `https://ip2.hackstart.org/v1` | `https://ip2.hackstart.org` |
+| 主要用途 | 本地 Agent、高级工作流 | 代码开发代理 |
+| 新人上手难度 | 较高 | 桌面端较低 |
+
+如果你还分不清这两个地址，先不要同时配置 Hermes 和 Codex。先让一个工具跑通，再配置另一个。

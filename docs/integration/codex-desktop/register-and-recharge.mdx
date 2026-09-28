@@ -1,0 +1,24 @@
+---
+sidebar_position: 1
+---
+
+import {H} from '@site/src/components/common/base';
+
+# 第1步 注册与充值
+
+这一篇是所有 HackStart API 接入教程的第一步。无论你后面使用 Codex 桌面端、Codex CLI、Cherry Studio、编辑器插件，还是 OpenClaw / Hermes，都需要先完成账号注册、登录、充值，并理解 Codex 模型价格。
+
+## 注册和登录
+打开 [HackStart 控制台](https://hackstart.org/login)，如果你已经有账号，直接登录。如果你是第一次使用，按页面提示完成注册。登录后进入用户控制台，确认能看到 API Key、充值、额度或使用记录相关入口。
+
+![个人控制台](https://md-1251009918.cos.ap-shanghai.myqcloud.com/hackstart/0101.png)
+
+注册时支持国内常用的邮箱后缀，比如gmail.com、outlook.com、163.com、126.com、qq.com等等，请务必填写您的真实邮箱地址，因为会发送6位验证码到邮箱进行验证，注册并登录后，就可以看到你的个人控制台了。
+
+
+## 充值步骤
+登录 [HackStart 控制台](https://hackstart.org/login)，进入充值或账户余额页面，按你的测试预算充值，回到控制台确认余额已经到账，再去创建 API Key。
+
+![充值界面](https://md-1251009918.cos.ap-shanghai.myqcloud.com/hackstart/0102.png)
+
+建议第一次只充值小额预算。确认客户端能够成功请求、控制台能看到用量后，再增加额度。HackStart 的 Codex 通道按实际 Token 用量计费。价格通常按1M tokens（大约100万汉字）展示。长文档、长代码库、批量资料和多轮 Agent 任务会消耗更多 tokens。10 元体验额度约 11M 输入/输出 token，约等于 1000 万汉字，适合先测试连通性与效果。

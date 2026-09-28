@@ -8,7 +8,9 @@ export default function LearningProgressTracker(): React.JSX.Element | null {
   const {pathname} = useLocation();
 
   useEffect(() => {
-    if (!getSub2ApiToken() || !pathname.startsWith('/docs/')) return;
+    const isPublicApiTutorial = ['/docs/integration/', '/docs/usecase/', '/docs/plugin-skill-handbook/']
+      .some((prefix) => pathname.startsWith(prefix));
+    if (isPublicApiTutorial || !getSub2ApiToken() || !pathname.startsWith('/docs/')) return;
     const title = typeof document === 'undefined' ? '' : document.title.replace(/\s*[|｜].*$/, '').trim();
     const course = pathname.split('/').filter(Boolean)[1] || '';
     void recordLearningProgress({path: pathname, title, course}).catch(() => undefined);

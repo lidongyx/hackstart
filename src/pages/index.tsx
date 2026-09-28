@@ -6,6 +6,7 @@ import {ArrowRight, BookOpen, Layers3, LoaderCircle, Shapes, Wrench} from 'lucid
 import {bookCategoryGroups, bookCatalog} from '@site/src/lib/bookCatalog';
 import {courseIntroPath, useHackstartCoursesState, type HackstartCourse} from '@site/src/lib/courses';
 import CourseSidebarMenu from '@site/src/components/courses/CourseSidebarMenu';
+import SidebarAccount from '@site/src/components/common/SidebarAccount';
 import styles from './courses.module.css';
 
 const fallbackCategory = '其他课程';
@@ -59,8 +60,9 @@ export default function Home(): React.ReactNode {
     <main className={styles.page}>
       <div className={styles.shell}>
         <aside className={styles.sidebar} aria-label="小册导航">
-          <CourseSidebarMenu courses={courses} />
+          <div className={styles.sidebarScroll}><CourseSidebarMenu courses={courses} /></div>
           <div className={styles.sidebarNote}><span>LEARN BY DOING</span><p>每本小册都从目标、输入和交付结果出发。</p></div>
+          <div className={styles.sidebarAccount}><SidebarAccount /></div>
         </aside>
 
         <div className={styles.content}>

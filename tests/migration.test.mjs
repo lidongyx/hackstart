@@ -19,6 +19,7 @@ const adapted = new Set([
   'src/theme/Navbar/MobileSidebar/PrimaryMenu/index.tsx',
   'src/components/docs/CourseAccessGate.tsx',
   'src/theme/DocSidebar/Desktop/index.tsx',
+  'src/theme/MDXComponents/index.tsx',
   'src/theme/DocRoot/Layout/Main/styles.module.css',
   'src/components/courses/CourseSidebarMenu.module.css',
   'src/components/workshops/WorkshopShell.tsx',

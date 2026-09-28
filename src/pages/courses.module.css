@@ -12,3 +12,7 @@
 
 a.card { color: var(--hs-text); text-decoration: none; }
 a.card:focus-visible { outline: 2px solid var(--hs-primary); outline-offset: 3px; }
+
+.sidebarScroll{flex:1;min-height:0;overflow-y:auto}
+.sidebarNote{flex-shrink:0}
+.sidebarAccount{flex-shrink:0;padding-top:14px}

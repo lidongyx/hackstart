@@ -1,10 +1,11 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
 import {useLocation} from '@docusaurus/router';
-import {BookOpen, Boxes, Crown, MessagesSquare, Wrench} from 'lucide-react';
+import {BookOpen, Boxes, BookOpenCheck, Crown, MessagesSquare, Wrench} from 'lucide-react';
 
 const items = [
-  {label: '系列课程', href: '/book/', icon: BookOpen, match: (path: string) => path === '/' || path === '/book/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/'))},
+  {label: '系列课程', href: '/book/', icon: BookOpen, match: (path: string) => path === '/' || path === '/book/' || (path.startsWith('/docs/') && !path.startsWith('/docs/workshops/') && !['/docs/integration/', '/docs/usecase/', '/docs/plugin-skill-handbook/'].some((prefix) => path.startsWith(prefix)))},
+  {label: 'API教程', href: '/docs/integration/intro/', icon: BookOpenCheck, match: (path: string) => ['/docs/integration/', '/docs/usecase/', '/docs/plugin-skill-handbook/'].some((prefix) => path.startsWith(prefix))},
   {label: 'Workshop', href: '/workshop/', icon: Wrench, match: (path: string) => path.startsWith('/workshop') || path.startsWith('/docs/workshops/')},
   {label: '资源导航', href: '/resources/?category=modeling', icon: Boxes, match: (path: string) => path.startsWith('/resources')},
   {label: '社区', href: '/community/', icon: MessagesSquare, match: (path: string) => path.startsWith('/community')},

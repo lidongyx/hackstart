@@ -32,10 +32,6 @@ function secureMemberDocRemarkPlugin() {
     }
     tree.children = [
       {
-        type: 'mdxjsEsm',
-        value: "import RemoteDocBody from '@site/src/components/docs/RemoteDocBody';",
-      },
-      {
         type: 'mdxJsxFlowElement',
         name: 'RemoteDocBody',
         attributes: [

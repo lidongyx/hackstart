@@ -1,6 +1,5 @@
 import React, {type ReactNode} from 'react';
 import clsx from 'clsx';
-import Link from '@docusaurus/Link';
 import {useColorMode} from '@docusaurus/theme-common';
 import {useThemeConfig} from '@docusaurus/theme-common';
 import CollapseButton from '@theme/DocSidebar/Desktop/CollapseButton';
@@ -22,7 +21,6 @@ export default function DocSidebarDesktop({path, sidebar, onCollapse, isHidden}:
           <span aria-hidden="true">{colorMode === 'dark' ? '☼' : '◐'}</span>
           {colorMode === 'dark' ? '切换亮色主题' : '切换暗色主题'}
         </button>
-        <Link to="/login/">登录 / 注册 <span aria-hidden="true">↗</span></Link>
       </div>
       {hideable && <CollapseButton onClick={onCollapse} />}
     </div>

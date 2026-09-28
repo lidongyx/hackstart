@@ -1,0 +1,49 @@
+---
+sidebar_position: 4
+---
+
+import {H} from '@site/src/components/common/base';
+
+# 第4步 Codex 配置与 CC Switch
+CC Switch可以用来管理 Codex等电脑大模型的供应商Provider 配置。对新人来说，使用它，就不用你手动找 Codex 配置文件，也不需记住每个客户端的配置目录。可以把 HackStart API Key 和 Base URL 一键导入，还可以在多个服务商之间切换。
+
+## 下载 CC Switch
+
+以下是macOS的下载链接，它不分芯片。如果你的网络环境不好，优先使用第一个 HackStart 镜像；如果速度不理想，可以切换到腾讯云备用镜像：
+
+- HackStart 镜像：[CC-Switch-macOS-latest.dmg](https://downloads.hackstart.org/cc-switch/latest/CC-Switch-macOS-latest.dmg)
+- 腾讯云镜像：[CC-Switch-macOS-latest.dmg](https://hackweek-1251009918.cos.ap-shanghai.myqcloud.com/cc-switch/CC-Switch-macOS-latest.dmg)
+- GitHub 最新版：[farion1231/cc-switch Releases](https://github.com/farion1231/cc-switch/releases/latest)
+
+以下是Windows的下载链接。普通电脑推荐 MSI 安装包，公司电脑限制安装软件时可以使用 Portable ZIP；每种安装包都提供 HackStart 和腾讯云两个下载地址：
+
+- HackStart MSI 镜像：[CC-Switch-Windows-latest.msi](https://downloads.hackstart.org/cc-switch/latest/CC-Switch-Windows-latest.msi)
+- 腾讯云 MSI 镜像：[CC-Switch-Windows-latest.msi](https://hackweek-1251009918.cos.ap-shanghai.myqcloud.com/cc-switch/CC-Switch-Windows-latest.msi)
+- HackStart Portable ZIP 镜像：[CC-Switch-Windows-Portable-latest.zip](https://downloads.hackstart.org/cc-switch/latest/CC-Switch-Windows-Portable-latest.zip)
+- 腾讯云 Portable ZIP 镜像：[CC-Switch-Windows-Portable-latest.zip](https://hackweek-1251009918.cos.ap-shanghai.myqcloud.com/cc-switch/CC-Switch-Windows-Portable-latest.zip)
+- GitHub 最新版：[farion1231/cc-switch Releases](https://github.com/farion1231/cc-switch/releases/latest)
+
+## 安装注意事项
+
+macOS：打开下载好的DMG文件，把 CC Switch 拖入 Applications / 应用程序。第一次打开如被系统拦截，到 系统设置 -> 隐私与安全性 允许打开。如果它请求访问本机配置目录，允许访问。
+
+Windows：推荐使用 MSI 安装包。如果公司电脑限制安装软件，可以使用 Portable ZIP。ZIP 解压到固定目录，如果系统提示注册协议处理程序，允许。这样 HackStart 控制台的“导入到 CC Switch”才能工作。
+
+
+## 从 HackStart 控制台导入配置
+登录 [HackStart 控制台](https://hackstart.org/login)，进入 API Key 页面，选择你准备用于 Codex 的 Key，在确保CC Switch在运行的状态下，点击“导入CCS“，浏览器会尝试打开 `ccswitch://` 协议。允许打开 CC Switch。在 CC Switch 里确认导入配置，CC Switch会自动切换当前 Provider 为 HackStart Codex。
+
+![CC Switch的配置](https://md-1251009918.cos.ap-shanghai.myqcloud.com/hackstart/0106.png)
+
+如果浏览器提示无法打开 `ccswitch://`，说明 CC Switch 没有安装好，或协议处理程序没有注册，这就需要你来手动配置了。
+
+## 手动配置参考
+手动配置也并不困难，只需要填写几个基础的信息就可以，首先注意看以下截图配置的位置，一定要先选中“OpenAI“，然后再去点击“+“号来新建供应商。
+![CC Switch的详细配置](https://md-1251009918.cos.ap-shanghai.myqcloud.com/hackstart/0108.png)
+
+注意创建自定义供应商时，在新版的CC Switch，只需要填写3个配置即可，一是你可以自定义供应商的名称，随便填，就填“HackStart“即可；二是复制粘贴在HackStart后台生成的key；三是API的请求地址是`https://ip2.hackstart.org`，后面不要加`/v1`，然后保存即可，就能用了。
+![CC Switch的详细配置](https://md-1251009918.cos.ap-shanghai.myqcloud.com/hackstart/0107.png)
+
+
+## 配置完成后的重启
+当CC Switch配置完成后，需要你完整退出 Codex 桌面端，再重新打开，这个配置才能生效。只关闭窗口有时不等于退出进程。macOS 可以在 Dock 图标右键退出；Windows 可以在任务栏或任务管理器确认 Codex 已退出。重启后再新建任务，Codex 才会读取新的 HackStart Provider。

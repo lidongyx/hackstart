@@ -1,0 +1,117 @@
+---
+sidebar_position: 2
+---
+
+# 通用 OpenAI Compatible 聊天客户端
+
+除了 Cherry Studio，还有很多聊天客户端支持 OpenAI Compatible Provider。它们的界面不同，但配置逻辑基本一致：填 API Key、填 Base URL、填模型名。
+
+这类软件通常使用：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+## 适用软件类型
+
+只要软件设置里出现这些词，就可以参考本页：
+
+- OpenAI Compatible
+- Custom OpenAI
+- OpenAI API Base URL
+- API Host
+- Base URL
+- Chat Completions
+- Model Provider
+
+如果软件明确写 Codex、Responses、`wire_api = "responses"`，请不要套用本页，回到 Codex 教程。
+
+## 通用配置项
+
+| 配置项 | 填写内容 |
+| --- | --- |
+| Provider Name | `HackStart` |
+| API Key | HackStart 控制台生成的 Key |
+| Base URL | `https://ip2.hackstart.org/v1` |
+| Model | 控制台可用模型，例如 `gpt-5.5` |
+| API Type | OpenAI Compatible / Chat Completions |
+
+有些软件会把 Base URL 拆成 Host 和 Path。一般填完整的：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+如果软件已经固定添加 `/v1`，那你只填：
+
+```text
+https://ip2.hackstart.org
+```
+
+判断方法：保存后看软件实际请求。如果报错里出现 `/v1/v1`，说明重复加了 `/v1`。
+
+## macOS 下载和安装通用注意事项
+
+1. 优先从软件官网或 GitHub Releases 下载。
+2. Apple Silicon Mac 选择 arm64 / aarch64 / Apple Silicon。
+3. Intel Mac 选择 x64 / Intel。
+4. DMG 安装包通常是拖入 Applications。
+5. 第一次打开被拦截时，到 系统设置 -> 隐私与安全性 允许打开。
+
+不要从不明网盘下载改包版本。AI 客户端里会保存 API Key，来源不可信的软件风险很高。
+
+## Windows 下载和安装通用注意事项
+
+1. 优先从官网、GitHub Releases 或 Microsoft Store 下载。
+2. 常见安装包是 `.exe`、`.msi` 或 `.zip`。
+3. ZIP 便携版解压到固定目录，不要直接在压缩包里运行。
+4. 如果 Defender 提示风险，确认来源后再继续。
+5. 安装后从开始菜单或固定目录启动。
+
+公司电脑可能会限制未知软件联网。如果配置无误但一直连接失败，检查防火墙、代理和公司网络策略。
+
+## 第一次测试
+
+新建会话，选择 HackStart Provider，输入：
+
+```text
+请回答：1+1 等于几？并说明你正在使用 HackStart API。
+```
+
+测试成功后，再尝试长文本总结、代码解释或图片生成。
+
+## 不同任务的模型建议
+
+| 任务 | 建议 |
+| --- | --- |
+| 日常问答 | 低成本模型优先 |
+| 长文总结 | 选择上下文更大的模型 |
+| 代码解释 | 选择擅长代码的模型 |
+| 复杂推理 | 选择高能力模型 |
+| 图片生成 | 选择图片模型，例如控制台可用的 `gpt-image-2` |
+
+## 常见错误
+
+### 软件要求 Organization ID
+
+HackStart 通常不需要填写 Organization ID。留空即可。
+
+### 软件要求 API Version
+
+OpenAI Compatible 场景通常不需要填。除非软件强制要求，否则留空或使用默认值。
+
+### 软件要求 Endpoint，不叫 Base URL
+
+大多数情况下 Endpoint 就填：
+
+```text
+https://ip2.hackstart.org/v1
+```
+
+### 流式输出失败
+
+先关闭 Streaming / Stream Response 试一次。如果关闭后成功，说明客户端的流式解析和当前模型或接口不兼容。再尝试更新客户端版本。
+
+### 请求很慢
+
+不要连续重复发送。先看 HackStart 控制台是否已有请求记录，再决定是否重试。
