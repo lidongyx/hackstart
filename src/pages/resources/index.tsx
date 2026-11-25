@@ -98,7 +98,13 @@ export default function Home(): React.ReactNode {
   const [active, setActive] = useState<ResourceCategory>(initialCategory);
   const [activeSubcategory, setActiveSubcategory] = useState<string>(new URLSearchParams(location.search).get('subcategory') || '');
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [sort, setSort] = useState(initialCategory === 'skills' ? 'popular' : 'latest');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [query]);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Resource[]>(seedResources);
   const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
@@ -119,7 +125,7 @@ export default function Home(): React.ReactNode {
     if (active === 'modeling' && activeSubcategory) url.searchParams.set('subcategory', activeSubcategory);
     url.searchParams.set('page', String(page));
     url.searchParams.set('page_size', String(pageSize));
-    if (query.trim()) url.searchParams.set('search', query.trim());
+    if (debouncedQuery) url.searchParams.set('search', debouncedQuery);
     if (sort) url.searchParams.set('sort', sort);
     setLoading(true);
     fetch(url.toString(), {headers: {Accept: 'application/json'}, signal: controller.signal})
@@ -151,7 +157,7 @@ export default function Home(): React.ReactNode {
       mounted = false;
       controller.abort();
     };
-  }, [active, activeSubcategory, page, query, resourcesApiUrl, skillsApiUrl, sort]);
+  }, [active, activeSubcategory, debouncedQuery, page, resourcesApiUrl, skillsApiUrl, sort]);
 
   const fallbackItems = useMemo(
     () => items.filter((item) => item.category === active && (!activeSubcategory || item.subcategory === activeSubcategory) && `${item.title} ${item.summary} ${item.tags.join(' ')}`.toLowerCase().includes(query.toLowerCase())),

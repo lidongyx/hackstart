@@ -107,7 +107,13 @@ export default function CommunityPage(): React.ReactNode {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedTopic, setSelectedTopic] = useState('');
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [query]);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -128,24 +134,34 @@ export default function CommunityPage(): React.ReactNode {
     .then((body) => setTopics(body.items || []))
     .catch(() => undefined);
 
-  const loadPosts = () => {
+  const loadPosts = (signal?: AbortSignal) => {
     setLoading(true);
     setError('');
     const params = new URLSearchParams({page: String(page)});
     if (selectedTopic) params.set('topic', selectedTopic);
-    if (query.trim()) params.set('search', query.trim());
-    return sub2ApiFetch(`${apiBase}/posts?${params}`, {headers: {Accept: 'application/json'}})
+    if (debouncedQuery) params.set('search', debouncedQuery);
+    return sub2ApiFetch(`${apiBase}/posts?${params}`, {headers: {Accept: 'application/json'}, signal})
       .then((response) => response.ok ? response.json() as Promise<PostResponse> : Promise.reject(new Error('读取帖子失败')))
       .then((body) => {
         setPosts(body.items || []);
         setPages(Math.max(1, body.pagination?.pages || 1));
       })
-      .catch((reason) => setError(reason instanceof Error ? reason.message : '读取帖子失败'))
-      .finally(() => setLoading(false));
+      .catch((reason) => {
+        if (!(reason instanceof DOMException && reason.name === 'AbortError')) {
+          setError(reason instanceof Error ? reason.message : '读取帖子失败');
+        }
+      })
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
+      });
   };
 
   useEffect(() => { void loadTopics(); }, []);
-  useEffect(() => { void loadPosts(); }, [page, query, selectedTopic]);
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadPosts(controller.signal);
+    return () => controller.abort();
+  }, [page, debouncedQuery, selectedTopic]);
   useEffect(() => {
     let mounted = true;
     const syncAuth = () => {

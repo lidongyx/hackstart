@@ -7,5 +7,5 @@
 - 不迁入 Sub2API 控制台、凭据、服务器部署脚本、Git 元数据、生成缓存或依赖目录。
 - 本次迁移阶段不部署、不更改 DNS、Amplify 或线上后端配置。
 - 改动后运行 `pnpm typecheck`、`pnpm test`、`pnpm build`；交互测试使用模拟接口，不能创建真实支付订单或发布测试帖子。
-- 当前 CourseAccessGate 只隐藏浏览器内容；会员正文仍在静态 JS。正文移出公开构建并由服务端鉴权前，不得宣称已实现安全会员阅读。
+- 会员课程与 Workshop 正文已通过 `secureMemberDocRemarkPlugin` 在构建时剥离，运行时由 HackAdmin `/api/hackstart/content/:code/*path` 鉴权下发；同步文档时须同步私有 Markdown 至 `54.188.17.201:/opt/hackadmin/private-content/`。
 - Hackadmin 部署目标限制遵循父目录 AGENTS.md，绝不可发送至 Sub2API 服务器。

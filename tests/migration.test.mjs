@@ -7,8 +7,8 @@ const root = new URL('../', import.meta.url);
 const adapted = new Set([
   'package.json', 'docusaurus.config.ts', 'sidebars.ts',
   'src/lib/sub2api-auth.ts', 'src/lib/courses.ts', 'src/lib/docLibrary.ts',
-  'src/pages/index.tsx', 'src/pages/resources/detail/index.tsx', 'src/pages/membership/index.tsx',
-  'src/pages/qrcode.tsx', 'src/lib/resources.ts',
+  'src/pages/index.tsx', 'src/pages/resources/index.tsx', 'src/pages/resources/detail/index.tsx', 'src/pages/membership/index.tsx', 'src/pages/account/index.tsx',
+  'src/pages/qrcode.tsx', 'src/lib/resources.ts', 'src/lib/types.ts',
   'src/lib/courses.ts',
   'src/pages/community/index.tsx', 'src/pages/community/post/index.tsx', 'src/pages/community/mine/index.tsx',
   'src/pages/workshop/index.tsx', 'src/pages/workshop/tasks.tsx', 'src/pages/workshop/results.tsx',

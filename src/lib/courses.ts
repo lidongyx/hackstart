@@ -65,11 +65,39 @@ export function courseIntroPath(course: HackstartCourse) {
   return bookEntryPath({docsPath: course.docs_path.replace(/^\/+|\/+$/g, '')});
 }
 
+const COURSES_CACHE_TTL_MS = 5 * 60 * 1000;
+let cachedCoursesUrl = '';
+let cachedCoursesList: HackstartCourse[] | null = null;
+let cachedCoursesAt = 0;
+let coursesInFlight: Promise<HackstartCourse[]> | null = null;
+
+function fetchCoursesCached(apiURL: string): Promise<HackstartCourse[]> {
+  if (cachedCoursesList && cachedCoursesUrl === apiURL && Date.now() - cachedCoursesAt < COURSES_CACHE_TTL_MS) {
+    return Promise.resolve(cachedCoursesList);
+  }
+  if (!coursesInFlight || cachedCoursesUrl !== apiURL) {
+    cachedCoursesUrl = apiURL;
+    coursesInFlight = fetch(apiURL)
+      .then((response) => response.ok ? response.json() as Promise<CourseResponse> : Promise.reject(new Error('course api failed')))
+      .then((result) => {
+        const list = normalizedCourses(result.items);
+        cachedCoursesList = list;
+        cachedCoursesAt = Date.now();
+        return list;
+      })
+      .finally(() => {
+        coursesInFlight = null;
+      });
+  }
+  return coursesInFlight;
+}
+
 export function useHackstartCoursesState(enabled = true): HackstartCoursesState {
   const {siteConfig} = useDocusaurusContext();
   const apiURL = String(siteConfig.customFields?.coursesApiUrl || '');
-  const [remoteCourses, setRemoteCourses] = useState<HackstartCourse[] | null>(null);
-  const [status, setStatus] = useState<HackstartCoursesState['status']>(enabled && apiURL ? 'loading' : 'ready');
+  const hasWarmCache = Boolean(enabled && apiURL && cachedCoursesList && cachedCoursesUrl === apiURL && Date.now() - cachedCoursesAt < COURSES_CACHE_TTL_MS);
+  const [remoteCourses, setRemoteCourses] = useState<HackstartCourse[] | null>(hasWarmCache ? cachedCoursesList : null);
+  const [status, setStatus] = useState<HackstartCoursesState['status']>(hasWarmCache || !enabled || !apiURL ? 'ready' : 'loading');
 
   useEffect(() => {
     if (!enabled || !apiURL) {
@@ -77,21 +105,24 @@ export function useHackstartCoursesState(enabled = true): HackstartCoursesState 
       setStatus('ready');
       return;
     }
-    const controller = new AbortController();
-    setStatus('loading');
-    fetch(apiURL, {signal: controller.signal})
-      .then((response) => response.ok ? response.json() as Promise<CourseResponse> : Promise.reject(new Error('course api failed')))
-      .then((result) => {
-        setRemoteCourses(normalizedCourses(result.items));
+    let mounted = true;
+    if (!cachedCoursesList || cachedCoursesUrl !== apiURL || Date.now() - cachedCoursesAt >= COURSES_CACHE_TTL_MS) {
+      setStatus('loading');
+    }
+    fetchCoursesCached(apiURL)
+      .then((list) => {
+        if (!mounted) return;
+        setRemoteCourses(list);
         setStatus('ready');
       })
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === 'AbortError')) {
-          setRemoteCourses(null);
-          setStatus('error');
-        }
+      .catch(() => {
+        if (!mounted) return;
+        setRemoteCourses(null);
+        setStatus('error');
       });
-    return () => controller.abort();
+    return () => {
+      mounted = false;
+    };
   }, [apiURL, enabled]);
 
   return useMemo(() => ({

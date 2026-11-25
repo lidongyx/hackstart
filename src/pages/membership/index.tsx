@@ -12,6 +12,7 @@ import styles from './styles.module.css';
 type Membership = {
   active: boolean;
   member: boolean;
+  lifetime?: boolean;
   purchase_count: number;
   started_at: string | null;
   expires_at: string | null;
@@ -51,6 +52,7 @@ export default function MembershipPage(): ReactNode {
   const [payment, setPayment] = useState<PaymentResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const pollTimer = useRef<number | undefined>(undefined);
@@ -83,8 +85,26 @@ export default function MembershipPage(): ReactNode {
   const returnURL = typeof window === 'undefined' ? `${siteConfig.url}/membership/` : window.location.href;
   const loginHref = useMemo(() => `/login/?redirect=${encodeURIComponent(returnURL.startsWith('/') ? returnURL : '/membership/')}`, [returnURL]);
   const pendingOrder = data?.orders.find((order) => order.status === 'pending');
-  const canBuy = Boolean(data?.provider_enabled && !pendingOrder);
+  const canBuy = Boolean(data?.provider_enabled && !pendingOrder && !data?.membership.active);
   const priceCents = data?.product.amount_cents || 6800;
+
+  async function cancelOrder(orderId: number) {
+    setCancelling(true);
+    setError('');
+    try {
+      const response = await sub2ApiFetch(`${apiURL}/orders/${orderId}`, {method: 'DELETE', headers: {Accept: 'application/json'}});
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({})) as {message?: string};
+        throw new Error(body.message || '取消订单失败');
+      }
+      setPayment(null);
+      await load(false);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : '取消订单失败');
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   async function createOrder() {
     setSubmitting(true);
@@ -158,8 +178,8 @@ export default function MembershipPage(): ReactNode {
                   <p className={styles.eyebrow}>你的账户</p>
                   <Heading as="h2">{session.nickname || session.email || 'HackStart 用户'}</Heading>
                   <p>{session.email}</p>
-                  <div className={styles.statusRow}><span>会员状态</span><strong className={data.membership.active ? styles.active : styles.muted}>{data.membership.active ? '永久会员有效' : data.membership.member ? '会员已到期' : '尚未开通'}</strong></div>
-                  <div className={styles.statusRow}><span>有效期至</span><strong>{formatDate(data.membership.expires_at)}</strong></div>
+                  <div className={styles.statusRow}><span>会员状态</span><strong className={data.membership.active ? styles.active : styles.muted}>{data.membership.active ? '永久会员有效' : '尚未开通'}</strong></div>
+                  <div className={styles.statusRow}><span>有效期</span><strong>{data.membership.active ? '永久有效' : '—'}</strong></div>
                   <div className={styles.statusRow}><span>已购买</span><strong>{data.membership.purchase_count} 次</strong></div>
                 </article>
                 <article className={`${styles.panel} ${styles.offer}`}>
@@ -167,13 +187,13 @@ export default function MembershipPage(): ReactNode {
                   <Heading as="h2">HackStart 永久会员</Heading>
                   <p className={styles.offerLead}>一次开通，永久阅读会员课程、文章和后续新增内容。</p>
                   <div className={styles.offerPrice}>¥{(data.product.amount_cents / 100).toFixed(0)}<small> / 永久</small></div>
-                  {data.membership.active && <div className={styles.success}><Check />当前有效至 {formatDate(data.membership.expires_at)}</div>}
-                  <button className={styles.primary} disabled={!canBuy || submitting} onClick={createOrder}>{submitting ? <LoaderCircle className={styles.spin} /> : <Clock3 />}{submitting ? '正在创建订单' : data.provider_enabled ? data.membership.active ? '继续购买' : '开通永久会员' : '支付暂未开放'}</button>
+                  {data.membership.active && <div className={styles.success}><Check />已开通永久会员，当前及后续更新永久可读</div>}
+                  {!data.membership.active && <button className={styles.primary} disabled={!canBuy || submitting} onClick={createOrder}>{submitting ? <LoaderCircle className={styles.spin} /> : <Clock3 />}{submitting ? '正在创建订单' : data.provider_enabled ? '开通永久会员' : '支付暂未开放'}</button>}
                   <small className={styles.hint}>会员费用只用于课程阅读，不会增加或扣减 API 余额。</small>
                 </article>
               </section>
 
-              {pendingOrder && <section className={styles.paymentPanel}><div><p className={styles.eyebrow}>完成支付</p><Heading as="h2">扫码加入会员</Heading><p>支付完成后点击刷新状态，系统确认后会立即开通或延长会员。</p><button className={styles.secondary} onClick={refreshStatus} disabled={refreshing}>{refreshing ? <LoaderCircle className={styles.spin} /> : <RefreshCw />}{refreshing ? '刷新中' : '刷新支付状态'}</button></div>{(payment?.url_qrcode || pendingOrder.url_qrcode) ? <img className={styles.qrcode} src={payment?.url_qrcode || pendingOrder.url_qrcode} alt="支付二维码" /> : (payment?.url || pendingOrder.url) ? <a className={styles.primary} href={payment?.url || pendingOrder.url} target="_blank" rel="noreferrer">打开支付页面 <ExternalLink /></a> : <span className={styles.hint}>订单已创建，请稍候加载支付信息。</span>}</section>}
+              {pendingOrder && <section className={styles.paymentPanel}><div><p className={styles.eyebrow}>完成支付</p><Heading as="h2">扫码加入会员</Heading><p>支付完成后点击刷新状态，系统确认后会立即开通永久会员。若二维码过期，可取消后重新下单。</p><div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}><button className={styles.secondary} onClick={refreshStatus} disabled={refreshing || cancelling}>{refreshing ? <LoaderCircle className={styles.spin} /> : <RefreshCw />}{refreshing ? '刷新中' : '刷新支付状态'}</button><button className={styles.secondary} onClick={() => void cancelOrder(pendingOrder.id)} disabled={cancelling || refreshing}>{cancelling ? '取消中…' : '取消待支付订单'}</button></div></div>{(payment?.url_qrcode || pendingOrder.url_qrcode) ? <img className={styles.qrcode} src={payment?.url_qrcode || pendingOrder.url_qrcode} alt="支付二维码" /> : (payment?.url || pendingOrder.url) ? <a className={styles.primary} href={payment?.url || pendingOrder.url} target="_blank" rel="noreferrer">打开支付页面 <ExternalLink /></a> : <span className={styles.hint}>订单已创建，请稍候加载支付信息。</span>}</section>}
               {data.membership.active && <section className={styles.successPanel}><Check /><div><Heading as="h2">会员已生效</Heading><p>现在可以阅读 CodexStart 和其他会员系列中的文章。</p></div><Link className={styles.primary} to="/docs/codexstart/intro/">查看课程目录</Link></section>}
               <section className={styles.orders}><div className={styles.ordersHeading}><Heading as="h2">购买记录</Heading><button className={styles.iconButton} title="刷新购买记录" onClick={refreshStatus}><RefreshCw /></button></div>{data.orders.length ? data.orders.slice(0, 5).map((order) => <div className={styles.order} key={order.id}><span>{order.title}</span><strong>¥{(order.amount_cents / 100).toFixed(0)}</strong><em className={styles[order.status]}>{order.status === 'paid' ? '已支付' : order.status === 'pending' ? '待支付' : order.status === 'failed' ? '失败' : '已取消'}</em><small>{formatDate(order.paid_at || order.created_at)}</small></div>) : <p className={styles.hint}>还没有购买记录。</p>}</section>
             </>

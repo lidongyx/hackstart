@@ -4,7 +4,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import {LoaderCircle, LockKeyhole} from 'lucide-react';
 
 import type {HackstartCourse} from '@site/src/lib/courses';
-import {fetchCurrentSub2ApiUser, sub2ApiFetch} from '@site/src/lib/sub2api-auth';
+import {clearSub2ApiAuth, getSub2ApiToken, sub2ApiFetch, subscribeToSub2ApiAuth} from '@site/src/lib/sub2api-auth';
 import styles from './CourseAccessGate.module.css';
 
 type AccessResponse = {
@@ -13,6 +13,52 @@ type AccessResponse = {
 };
 
 type State = 'loading' | 'allowed' | 'anonymous' | 'locked' | 'error';
+
+const ACCESS_CACHE_TTL_MS = 60_000;
+let cachedAccessToken: string | null = null;
+let cachedAccessState: Exclude<State, 'loading' | 'error'> | null = null;
+let cachedAccessAt = 0;
+let accessInFlight: Promise<Exclude<State, 'loading' | 'error'>> | null = null;
+
+function resetAccessCache(): void {
+  cachedAccessToken = null;
+  cachedAccessState = null;
+  cachedAccessAt = 0;
+  accessInFlight = null;
+}
+
+function checkMembershipAccess(accessApiBaseURL: string): Promise<Exclude<State, 'loading' | 'error'>> {
+  const token = getSub2ApiToken();
+  if (!token) {
+    resetAccessCache();
+    return Promise.resolve('anonymous');
+  }
+  if (cachedAccessState && cachedAccessToken === token && Date.now() - cachedAccessAt < ACCESS_CACHE_TTL_MS) {
+    return Promise.resolve(cachedAccessState);
+  }
+  if (!accessInFlight || cachedAccessToken !== token) {
+    cachedAccessToken = token;
+    accessInFlight = sub2ApiFetch(accessApiBaseURL, {headers: {Accept: 'application/json'}})
+      .then(async (response) => {
+        if (response.status === 401) {
+          clearSub2ApiAuth();
+          return 'anonymous' as const;
+        }
+        if (!response.ok) throw new Error('access api failed');
+        const access = await response.json() as AccessResponse;
+        const next: Exclude<State, 'loading' | 'error'> = access.membership?.active ? 'allowed' : 'locked';
+        if (getSub2ApiToken() === token) {
+          cachedAccessState = next;
+          cachedAccessAt = Date.now();
+        }
+        return next;
+      })
+      .finally(() => {
+        accessInFlight = null;
+      });
+  }
+  return accessInFlight;
+}
 
 type Props = {
   course?: HackstartCourse;
@@ -23,7 +69,13 @@ type Props = {
 export default function CourseAccessGate({course, courseStatus = 'ready', children}: Props): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   const accessApiBaseURL = String(siteConfig.customFields?.membershipApiUrl || '');
-  const [state, setState] = useState<State>('loading');
+  const token = getSub2ApiToken();
+  const warmState: State = !token
+    ? 'anonymous'
+    : cachedAccessState && cachedAccessToken === token && Date.now() - cachedAccessAt < ACCESS_CACHE_TTL_MS
+      ? cachedAccessState
+      : 'loading';
+  const [state, setState] = useState<State>(warmState);
 
   useEffect(() => {
     if (!accessApiBaseURL) {
@@ -31,24 +83,30 @@ export default function CourseAccessGate({course, courseStatus = 'ready', childr
       return;
     }
 
-    setState('loading');
-    const controller = new AbortController();
-    fetchCurrentSub2ApiUser(controller.signal)
-      .then(async (user) => {
-        if (!user) {
-          setState('anonymous');
-          return;
-        }
-        const accessURL = accessApiBaseURL;
-        const accessResponse = await sub2ApiFetch(accessURL, {signal: controller.signal, headers: {Accept: 'application/json'}});
-        if (!accessResponse.ok) throw new Error('access api failed');
-        const access = await accessResponse.json() as AccessResponse;
-        setState(access.membership?.active ? 'allowed' : 'locked');
-      })
-      .catch((error: unknown) => {
-        if (!(error instanceof DOMException && error.name === 'AbortError')) setState('error');
-      });
-    return () => controller.abort();
+    let mounted = true;
+    const verify = () => {
+      if (!getSub2ApiToken()) {
+        resetAccessCache();
+        if (mounted) setState('anonymous');
+        return;
+      }
+      checkMembershipAccess(accessApiBaseURL)
+        .then((next) => {
+          if (mounted) setState(next);
+        })
+        .catch(() => {
+          if (mounted) setState('error');
+        });
+    };
+    verify();
+    const unsubscribe = subscribeToSub2ApiAuth(() => {
+      resetAccessCache();
+      verify();
+    });
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
   }, [accessApiBaseURL, course, courseStatus]);
 
   if (state === 'allowed') return children;

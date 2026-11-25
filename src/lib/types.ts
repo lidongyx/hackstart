@@ -1,6 +1,7 @@
 export type Membership = {
   active: boolean;
   member: boolean;
+  lifetime?: boolean;
   purchase_count: number;
   started_at: string | null;
   expires_at: string | null;

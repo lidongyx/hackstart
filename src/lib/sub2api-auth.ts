@@ -24,7 +24,19 @@ let authApiURL = DEFAULT_AUTH_API_URL;
 let refreshApiURL = 'https://hackstart.org/api/v1/auth/refresh';
 let sub2ApiBaseURL = 'https://hackstart.org/api/v1';
 let refreshPromise: Promise<boolean> | null = null;
+let currentUserPromise: Promise<Sub2ApiUser | null> | null = null;
+let cachedUser: Sub2ApiUser | null | undefined = undefined;
+let cachedUserToken: string | null = null;
+let cachedUserAt = 0;
+const CURRENT_USER_CACHE_TTL_MS = 30_000;
 const AUTH_CHANGED_EVENT = 'hackstart:auth-changed';
+
+function resetCurrentUserCache(): void {
+  currentUserPromise = null;
+  cachedUser = undefined;
+  cachedUserToken = null;
+  cachedUserAt = 0;
+}
 
 export function configureSub2ApiAuth(url?: string, baseURL?: string): void {
   const normalized = url?.trim();
@@ -107,10 +119,12 @@ export function consumeAuthTokenFromFragment(): void {
 }
 
 export function notifySub2ApiAuthChanged(): void {
+  resetCurrentUserCache();
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
 
 export function clearSub2ApiAuth(): void {
+  resetCurrentUserCache();
   if (typeof window === 'undefined') return;
   for (const key of [AUTH_TOKEN_KEY, AUTH_USER_KEY, REFRESH_TOKEN_KEY, TOKEN_EXPIRES_AT_KEY]) window.localStorage.removeItem(key);
   notifySub2ApiAuthChanged();
@@ -193,20 +207,48 @@ function unwrapUser(payload: AuthResponse | Sub2ApiUser | null): Sub2ApiUser | n
 }
 
 export async function fetchCurrentSub2ApiUser(signal?: AbortSignal): Promise<Sub2ApiUser | null> {
-  if (!getSub2ApiToken()) return null;
-
-  const response = await sub2ApiFetch(authApiURL, {
-    headers: {Accept: 'application/json'},
-    signal,
-  });
-
-  if (response.status === 401) {
-    clearSub2ApiAuth();
+  const token = getSub2ApiToken();
+  if (!token) {
+    resetCurrentUserCache();
     return null;
   }
-  if (!response.ok) throw new Error(`无法确认登录状态（HTTP ${response.status}）`);
-
-  return unwrapUser(await response.json() as AuthResponse | Sub2ApiUser | null);
+  if (cachedUser !== undefined && cachedUserToken === token && Date.now() - cachedUserAt < CURRENT_USER_CACHE_TTL_MS) {
+    return cachedUser;
+  }
+  if (!currentUserPromise || cachedUserToken !== token) {
+    cachedUserToken = token;
+    currentUserPromise = (async () => {
+      const response = await sub2ApiFetch(authApiURL, {
+        headers: {Accept: 'application/json'},
+      });
+      if (response.status === 401) {
+        clearSub2ApiAuth();
+        return null;
+      }
+      if (!response.ok) throw new Error(`无法确认登录状态（HTTP ${response.status}）`);
+      const user = unwrapUser(await response.json() as AuthResponse | Sub2ApiUser | null);
+      if (getSub2ApiToken() === token) {
+        cachedUser = user;
+        cachedUserAt = Date.now();
+        if (user && typeof window !== 'undefined') {
+          window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+        }
+      }
+      return user;
+    })().finally(() => {
+      currentUserPromise = null;
+    });
+  }
+  if (!signal) return currentUserPromise;
+  if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+  return new Promise<Sub2ApiUser | null>((resolve, reject) => {
+    const onAbort = () => reject(new DOMException('Aborted', 'AbortError'));
+    signal.addEventListener('abort', onAbort, {once: true});
+    currentUserPromise!.then(
+      (value) => { signal.removeEventListener('abort', onAbort); resolve(value); },
+      (error) => { signal.removeEventListener('abort', onAbort); reject(error); },
+    );
+  });
 }
 
 export function subscribeToSub2ApiAuth(onChange: () => void): () => void {
