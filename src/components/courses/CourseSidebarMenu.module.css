@@ -1,1 +1,91 @@
-.menu{display:grid;gap:18px}.groupTitle{margin:0 9px 7px;color:var(--hs-muted);font:800 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em}.courseList{display:grid;gap:2px}.course{display:flex;align-items:center;gap:9px;min-height:34px;box-sizing:border-box;padding:5px 8px;border:1px solid transparent;color:var(--hs-text);font-size:12px;font-weight:400;line-height:1.65;text-decoration:none;transition:background .18s ease,border-color .18s ease,color .18s ease}.course:hover,.active{border-color:rgba(13,107,97,.18);background:var(--hs-primary-soft);color:var(--hs-primary);text-decoration:none}.icon{display:grid;flex:none;place-items:center;width:17px;height:17px}.icon svg{width:16px;height:16px;stroke-width:1.7}.group[data-group='foundation'] .icon{color:#159b81}.group[data-group='creation'] .icon{color:#ea6517}.group[data-group='interaction'] .icon{color:#4f46e5}.group[data-group='other'] .icon{color:var(--hs-muted)}
+.menu {
+  display: grid;
+  gap: 20px;
+}
+
+.groupTitle {
+  margin: 0 10px 6px;
+  color: var(--hs-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.courseList {
+  display: grid;
+  gap: 2px;
+}
+
+.course {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--hs-radius-sm);
+  color: var(--hs-text-secondary);
+  font-size: 13.5px;
+  font-weight: 450;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color 0.15s var(--hs-ease), color 0.15s var(--hs-ease), border-color 0.15s var(--hs-ease);
+}
+
+.course:hover {
+  background: var(--hs-bg-subtle);
+  color: var(--hs-text);
+  text-decoration: none;
+}
+
+.active {
+  background: var(--hs-primary-soft);
+  color: var(--hs-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+
+.icon svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.8;
+}
+
+.group[data-group='foundation'] .icon {
+  color: #2563eb;
+}
+
+.group[data-group='creation'] .icon {
+  color: #d97706;
+}
+
+.group[data-group='interaction'] .icon {
+  color: #7c3aed;
+}
+
+.group[data-group='other'] .icon {
+  color: var(--hs-muted);
+}
+
+[data-theme='dark'] .group[data-group='foundation'] .icon {
+  color: #60a5fa;
+}
+
+[data-theme='dark'] .group[data-group='creation'] .icon {
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .group[data-group='interaction'] .icon {
+  color: #a78bfa;
+}

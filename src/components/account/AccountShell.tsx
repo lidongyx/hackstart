@@ -1,5 +1,6 @@
 import React, {useEffect, useState, type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
+import {useLocation} from '@docusaurus/router';
 import Layout from '@theme/Layout';
 import {LoaderCircle, LogOut} from 'lucide-react';
 import ResourceSidebar from '@site/src/components/resources/ResourceSidebar';
@@ -11,6 +12,7 @@ import styles from './styles.module.css';
 type Props = {title: string; children: (user: User, updateUser: (user: User) => void) => ReactNode};
 
 export default function AccountShell({title, children}: Props): ReactNode {
+  const {pathname} = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,11 +36,15 @@ export default function AccountShell({title, children}: Props): ReactNode {
     <main className={styles.page}>
       <header className={styles.header}><h1>{title}</h1>{user && <button className={styles.secondary} disabled={loggingOut} onClick={async () => {
         setLoggingOut(true); await logoutRemote(); setUser(null); setLoggingOut(false);
-      }}><LogOut size={16} />退出登录</button>}</header>
-      <nav className={styles.tabs} aria-label="账户导航"><Link to="/account/">会员中心</Link><Link to="/profile/">个人资料</Link><Link to="/membership/">永久会员</Link></nav>
+      }}><LogOut size={15} />退出登录</button>}</header>
+      <nav className={styles.tabs} aria-label="账户导航">
+        <Link to="/account/" data-active={pathname.startsWith('/account') ? 'true' : undefined}>会员中心</Link>
+        <Link to="/profile/" data-active={pathname.startsWith('/profile') ? 'true' : undefined}>个人资料</Link>
+        <Link to="/membership/" data-active={pathname.startsWith('/membership') ? 'true' : undefined}>永久会员</Link>
+      </nav>
       {loading ? <div className={styles.state}><LoaderCircle className={styles.spin} />正在读取账户</div>
         : error ? <div className={styles.state} role="alert"><p>{error}</p><button className={styles.secondary} onClick={() => setRevision(value => value + 1)}>重试</button><Link to={loginURL}>重新登录</Link></div>
-        : user ? children(user, setUser) : <div className={styles.state}><h2>登录 HackStart</h2><Link className={styles.primary} to={loginURL}>登录并继续</Link></div>}
+        : user ? children(user, setUser) : <div className={styles.state}><h2>登录 HackStart</h2><p>登录后管理你的永久会员、学习记录和个人资料。</p><Link className={styles.primary} to={loginURL}>登录并继续</Link></div>}
     </main>
   </div></Layout>;
 }
